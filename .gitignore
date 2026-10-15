@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Large raw datasets (Dữ liệu thô kích thước lớn, khuyên dùng download_mnist.py để tải lại)
+data/raw/
+# Bỏ ghi chú dòng dưới nếu không muốn đưa cả tệp mnist.npz lên Git:
+# data/mnist.npz
+
+# VS Code / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
