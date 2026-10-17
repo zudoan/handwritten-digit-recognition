@@ -23,10 +23,9 @@
 - **Môn học**: Nhận dạng mẫu (*Pattern Recognition*)
 - **Khóa học / Niên khóa**: Đại học chính quy (Năm thứ 4)
 - **Đề tài**: Nghiên cứu và triển khai các giải thuật nhận dạng mẫu trên bộ dữ liệu chữ số viết tay MNIST
-- **Sinh viên thực hiện**: `[Điền Họ và Tên sinh viên]`
-- **Mã số sinh viên (MSV)**: `[Điền Mã sinh viên]`
-- **Lớp**: `[Điền Tên lớp, ví dụ: 63KTPM...]`
-- **Giảng viên hướng dẫn**: `[Điền Tên Giảng viên hướng dẫn]`
+- **Sinh viên thực hiện**: `[Đoàn Anh Vũ - Nguyễn Hồng Nguyên]`
+- **Mã số sinh viên (MSV)**: `[2351267280 - 2351267273]`
+- **Lớp**: `[S26-65TTNT]
 
 ---
 
