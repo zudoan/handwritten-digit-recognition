@@ -1,3 +1,15 @@
 numpy>=1.22.0
+scipy>=1.9.0
 matplotlib>=3.5.0
+seaborn>=0.12.0
 scikit-learn>=1.0.0
+scikit-image>=0.19.0
+joblib>=1.2.0
+opencv-python>=4.7.0
+Pillow>=9.0.0
+torch>=2.0.0
+fastapi>=0.95.0
+uvicorn>=0.20.0
+python-docx>=0.8.11
+python-pptx>=0.6.21
+pydantic>=1.10.0

@@ -1,0 +1,42 @@
+{
+  "model": "ModernCNN",
+  "epochs_run": 4,
+  "best_epoch": 2,
+  "best_val_loss": 0.0424654452027753,
+  "best_val_acc": 98.7,
+  "test_accuracy": 99.0,
+  "test_macro_f1": 99.0,
+  "test_errors": 100,
+  "history": {
+    "train_loss": [
+      0.1649,
+      0.0604,
+      0.0454,
+      0.0407
+    ],
+    "train_acc": [
+      94.98,
+      98.15,
+      98.54,
+      98.71
+    ],
+    "val_loss": [
+      0.0541,
+      0.0425,
+      0.0438,
+      0.0525
+    ],
+    "val_acc": [
+      98.39,
+      98.7,
+      98.67,
+      98.46
+    ],
+    "val_macro_f1": [
+      98.38,
+      98.69,
+      98.65,
+      98.45
+    ]
+  }
+}

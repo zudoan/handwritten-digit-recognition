@@ -1,0 +1,98 @@
+{
+  "rows": [
+    {
+      "class": 0,
+      "train_count": 5923,
+      "train_percent": 9.87,
+      "test_count": 980,
+      "test_percent": 9.8,
+      "total_count": 6903,
+      "total_percent": 9.86
+    },
+    {
+      "class": 1,
+      "train_count": 6742,
+      "train_percent": 11.24,
+      "test_count": 1135,
+      "test_percent": 11.35,
+      "total_count": 7877,
+      "total_percent": 11.25
+    },
+    {
+      "class": 2,
+      "train_count": 5958,
+      "train_percent": 9.93,
+      "test_count": 1032,
+      "test_percent": 10.32,
+      "total_count": 6990,
+      "total_percent": 9.99
+    },
+    {
+      "class": 3,
+      "train_count": 6131,
+      "train_percent": 10.22,
+      "test_count": 1010,
+      "test_percent": 10.1,
+      "total_count": 7141,
+      "total_percent": 10.2
+    },
+    {
+      "class": 4,
+      "train_count": 5842,
+      "train_percent": 9.74,
+      "test_count": 982,
+      "test_percent": 9.82,
+      "total_count": 6824,
+      "total_percent": 9.75
+    },
+    {
+      "class": 5,
+      "train_count": 5421,
+      "train_percent": 9.04,
+      "test_count": 892,
+      "test_percent": 8.92,
+      "total_count": 6313,
+      "total_percent": 9.02
+    },
+    {
+      "class": 6,
+      "train_count": 5918,
+      "train_percent": 9.86,
+      "test_count": 958,
+      "test_percent": 9.58,
+      "total_count": 6876,
+      "total_percent": 9.82
+    },
+    {
+      "class": 7,
+      "train_count": 6265,
+      "train_percent": 10.44,
+      "test_count": 1028,
+      "test_percent": 10.28,
+      "total_count": 7293,
+      "total_percent": 10.42
+    },
+    {
+      "class": 8,
+      "train_count": 5851,
+      "train_percent": 9.75,
+      "test_count": 974,
+      "test_percent": 9.74,
+      "total_count": 6825,
+      "total_percent": 9.75
+    },
+    {
+      "class": 9,
+      "train_count": 5949,
+      "train_percent": 9.92,
+      "test_count": 1009,
+      "test_percent": 10.09,
+      "total_count": 6958,
+      "total_percent": 9.94
+    }
+  ],
+  "entropy": 3.319870926755188,
+  "balance_ratio": 0.9993807306860916,
+  "total_train": 60000,
+  "total_test": 10000
+}

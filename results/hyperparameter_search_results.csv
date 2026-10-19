@@ -1,0 +1,16 @@
+Model Family,Feature,Hyperparameters,Val Accuracy (%),Val Macro F1 (%),Train Time (s),Selected
+k-NN,PCA (152D),"{""n_neighbors"": 3, ""weights"": ""uniform""}",95.32,95.31,0.175,NO
+k-NN,PCA (152D),"{""n_neighbors"": 3, ""weights"": ""distance""}",95.6,95.59,0.145,YES
+k-NN,PCA (152D),"{""n_neighbors"": 5, ""weights"": ""uniform""}",95.19,95.18,0.147,NO
+k-NN,PCA (152D),"{""n_neighbors"": 5, ""weights"": ""distance""}",95.55,95.55,0.155,NO
+k-NN,PCA (152D),"{""n_neighbors"": 7, ""weights"": ""distance""}",95.21,95.22,0.164,NO
+Linear SVM,Raw Pixels (784D),"{""C"": 0.01}",90.36,90.25,0.739,YES
+Linear SVM,Raw Pixels (784D),"{""C"": 0.1}",90.17,90.03,0.912,NO
+Linear SVM,Raw Pixels (784D),"{""C"": 1.0}",88.87,88.72,1.386,NO
+Linear SVM,Raw Pixels (784D),"{""C"": 5.0}",87.7,87.55,2.356,NO
+RBF SVM,PCA (152D),"{""C"": 1.0, ""gamma"": ""scale""}",96.73,96.72,3.567,NO
+RBF SVM,PCA (152D),"{""C"": 5.0, ""gamma"": ""scale""}",97.09,97.08,3.54,YES
+RBF SVM,PCA (152D),"{""C"": 10.0, ""gamma"": ""scale""}",97.08,97.07,3.55,NO
+Random Forest,Raw Pixels (784D),"{""n_estimators"": 50, ""max_features"": ""sqrt""}",94.4,94.37,0.221,NO
+Random Forest,Raw Pixels (784D),"{""n_estimators"": 100, ""max_features"": ""sqrt""}",94.9,94.88,0.356,NO
+Random Forest,Raw Pixels (784D),"{""n_estimators"": 150, ""max_features"": ""sqrt""}",95.07,95.04,0.523,YES

@@ -1,0 +1,78 @@
+{
+  "environment": {
+    "os": "Windows 10/11 (AMD64)",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "python_version": "3.14.5",
+    "sklearn_version": "1.9.1",
+    "joblib_version": "1.6.0",
+    "torch_version": "2.14.1+cpu",
+    "numpy_version": "2.4.6",
+    "device": "cpu",
+    "batch_size": 1,
+    "batched_eval_size": 10000,
+    "measurement_method": "Single-image (50 warmups + 500 timed runs) & Batched throughput (10,000 samples)"
+  },
+  "benchmarks": [
+    {
+      "model_name": "Modern CNN",
+      "single_image_mean_ms": 0.516,
+      "single_image_median_ms": 0.405,
+      "single_image_p95_ms": 0.664,
+      "single_image_std_ms": 1.286,
+      "batch_total_sec": 1.061,
+      "batch_avg_latency_ms": 0.1061,
+      "throughput_samples_per_sec": 9426.5
+    },
+    {
+      "model_name": "SVM RBF (Deskew + PCA Pipeline)",
+      "single_image_mean_ms": 0.536,
+      "single_image_median_ms": 0.526,
+      "single_image_p95_ms": 0.592,
+      "single_image_std_ms": 0.029,
+      "batch_total_sec": 1.802,
+      "batch_avg_latency_ms": 0.1802,
+      "throughput_samples_per_sec": 5550.9
+    },
+    {
+      "model_name": "SVM RBF (PCA 154D)",
+      "single_image_mean_ms": 1.003,
+      "single_image_median_ms": 0.972,
+      "single_image_p95_ms": 1.17,
+      "single_image_std_ms": 0.101,
+      "batch_total_sec": 15.344,
+      "batch_avg_latency_ms": 1.5344,
+      "throughput_samples_per_sec": 651.7
+    },
+    {
+      "model_name": "k-NN (PCA 154D)",
+      "single_image_mean_ms": 68.729,
+      "single_image_median_ms": 11.984,
+      "single_image_p95_ms": 201.48,
+      "single_image_std_ms": 79.401,
+      "batch_total_sec": 6.315,
+      "batch_avg_latency_ms": 0.6315,
+      "throughput_samples_per_sec": 1583.4
+    },
+    {
+      "model_name": "Random Forest (150 c\u00e2y)",
+      "single_image_mean_ms": 300.052,
+      "single_image_median_ms": 324.283,
+      "single_image_p95_ms": 578.417,
+      "single_image_std_ms": 164.032,
+      "batch_total_sec": 0.16,
+      "batch_avg_latency_ms": 0.016,
+      "throughput_samples_per_sec": 62344.2
+    },
+    {
+      "model_name": "Linear SVM (C=0.01)",
+      "single_image_mean_ms": 0.15,
+      "single_image_median_ms": 0.147,
+      "single_image_p95_ms": 0.169,
+      "single_image_std_ms": 0.01,
+      "batch_total_sec": 0.036,
+      "batch_avg_latency_ms": 0.0036,
+      "throughput_samples_per_sec": 276187.4
+    }
+  ]
+}

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChuSoVietTay — Hệ Thống Nhận Dạng Chữ Số Viết Tay (MNIST) | Nhóm 03</title>
+    <meta name="description" content="Không gian tương tác thời gian thực nhận dạng chữ số viết tay và đối chuẩn học máy (Modern CNN, SVM, Random Forest, k-NN, Naive Bayes) trên bộ dữ liệu chuẩn MNIST.">
+    
+    <!-- Google Fonts: Editorial & Humanist Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Subtle Warm Ambient Atmosphere -->
+    <div class="ambient-layer" aria-hidden="true">
+        <div class="ambient-glow glow-top-left"></div>
+        <div class="ambient-glow glow-bottom-right"></div>
+    </div>
+
+    <div class="app-shell">
+        <!-- Floating Glass App Bar -->
+        <header class="app-bar">
+            <div class="app-bar-inner">
+                <div class="brand-group">
+                    <div class="brand-symbol">
+                        <span>03</span>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-name">CHỮ SỐ VIẾT TAY</span>
+                        <span class="brand-sub">Nhóm 03 · Nhận Dạng Mẫu · ĐH Thủy Lợi</span>
+                    </div>
+                </div>
+
+                <div class="header-status-group">
+                    <div class="status-pill" id="systemStatusPill" title="Máy chủ FastAPI đang hoạt động thời gian thực">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Hệ thống sẵn sàng</span>
+                    </div>
+                    <button id="btnToggleBenchmark" class="btn-text-pill" title="Xem bảng đối chuẩn 10 mô hình kiểm chứng">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                        <span>Đối chuẩn mô hình</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Container -->
+        <div class="content-wrapper">
+            <!-- Hero / Editorial Introduction -->
+            <section class="hero-section">
+                <div class="hero-eyebrow">
+                    <span class="eyebrow-tag">PATTERN RECOGNITION STUDIO</span>
+                    <span class="eyebrow-divider">/</span>
+                    <span class="eyebrow-note">TẬP DỮ LIỆU CHUẨN MNIST (70.000 ẢNH)</span>
+                </div>
+                <h1 class="hero-title">
+                    Viết một con số. Khám phá cách máy tính nhận dạng.
+                </h1>
+                <p class="hero-desc">
+                    Không gian thử nghiệm tương tác đối chuẩn trực tiếp giữa mạng nơ-ron tích chập hiện đại <strong>Modern CNN</strong> và các thuật toán học máy kinh điển (<strong>SVM Kernel</strong>, <strong>Random Forest</strong>, <strong>k-NN</strong>, <strong>Naive Bayes</strong>) kết hợp các không gian đặc trưng nắn thẳng Deskewing và giảm chiều PCA.
+                </p>
+            </section>
+
+            <!-- Interactive Workspace Grid -->
+            <main class="workspace-grid">
+                <!-- Left: Studio Canvas Card -->
+                <section class="glass-card canvas-studio-card">
+                    <div class="card-top-bar">
+                        <div class="card-heading">
+                            <span class="card-step-badge">1</span>
+                            <div>
+                                <h2 class="card-title">Bảng vẽ kỹ thuật số</h2>
+                                <p class="card-caption">Vẽ tay hoặc chọn mẫu kiểm thử từ MNIST Test Set</p>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Quick Tools -->
+                        <div class="canvas-quick-tools">
+                            <button id="btnClear" class="tool-btn" title="Xóa trắng bảng vẽ (C)">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                <span>Xóa trắng</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Precision Viewport -->
+                    <div class="canvas-viewport-wrapper">
+                        <div class="canvas-viewport" id="canvasViewport">
+                            <!-- Registration marks for lab precision feel -->
+                            <span class="corner-mark mark-tl" aria-hidden="true"></span>
+                            <span class="corner-mark mark-tr" aria-hidden="true"></span>
+                            <span class="corner-mark mark-bl" aria-hidden="true"></span>
+                            <span class="corner-mark mark-br" aria-hidden="true"></span>
+
+                            <canvas id="digitCanvas" width="280" height="280"></canvas>
+                            
+                            <!-- Interactive Center Hint -->
+                            <div id="canvasHint" class="canvas-center-hint">
+                                <div class="hint-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg>
+                                </div>
+                                <span class="hint-main-text">Vẽ một chữ số vào đây</span>
+                                <span class="hint-sub-text">Chuột hoặc cảm ứng · Tự động căn tâm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stroke Size Controller -->
+                    <div class="stroke-controls-bar">
+                        <span class="ctrl-label">Nét bút:</span>
+                        <div class="stroke-preset-group">
+                            <button type="button" class="stroke-preset-btn" data-size="14">Mảnh (14)</button>
+                            <button type="button" class="stroke-preset-btn active" data-size="20">Chuẩn (20)</button>
+                            <button type="button" class="stroke-preset-btn" data-size="28">Đậm (28)</button>
+                        </div>
+                        <input type="range" id="brushSize" min="12" max="32" value="20" class="brush-slider" title="Điều chỉnh nét vẽ">
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="canvas-action-row">
+                        <button id="btnPredict" class="btn btn-primary-action">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            <span>Nhận dạng ngay</span>
+                        </button>
+                        <label class="btn btn-ghost-action" for="imageUpload">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5-5 5 5m-5-5v12"/></svg>
+                            <span>Tải ảnh ngoài...</span>
+                        </label>
+                        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                    </div>
+
+                    <!-- Quick Samples Palette -->
+                    <div class="quick-samples-card">
+                        <div class="samples-header">
+                            <span class="samples-caption">Mẫu thử nghiệm thực tế (MNIST Test Set):</span>
+                            <span class="samples-hint">Nhấp để thử ngay</span>
+                        </div>
+                        <div id="samplesPalette" class="samples-palette">
+                            <div class="skeleton-pill">Đang nạp 10 mẫu test chuẩn...</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Right: Analysis & Prediction Workspace -->
+                <section class="glass-card analysis-studio-card">
+                    <div class="card-top-bar">
+                        <div class="card-heading">
+                            <span class="card-step-badge">2</span>
+                            <div>
+                                <h2 class="card-title">Kết quả phân lớp</h2>
+                                <p class="card-caption">Dự đoán trực tiếp từ Estimator và suy luận thời gian thực</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Selector & Metadata Pill -->
+                    <div class="model-selection-box">
+                        <div class="model-select-header">
+                            <label for="modelSelect" class="model-label">Mô hình phân loại:</label>
+                            <span class="model-type-tag" id="modelTypeTag">Học sâu tích chập (CNN)</span>
+                        </div>
+                        <div class="custom-select-container">
+                            <select id="modelSelect" class="modern-select">
+                                <option value="cnn">Đang nạp danh sách mô hình từ Registry...</option>
+                            </select>
+                            <span class="select-chevron" aria-hidden="true">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </span>
+                        </div>
+
+                        <!-- Active Model Specs Badge -->
+                        <div class="model-meta-bar" id="modelMetaBar">
+                            <div class="meta-chip">
+                                <span class="chip-key">Đặc trưng:</span>
+                                <span class="chip-val" id="modelFeatureVal">Learned Conv (28×28)</span>
+                            </div>
+                            <div class="meta-chip">
+                                <span class="chip-key">Tập huấn luyện:</span>
+                                <span class="chip-val" id="modelTrainVal">60.000 mẫu</span>
+                            </div>
+                            <div class="meta-chip chip-highlight">
+                                <span class="chip-key">Test Acc:</span>
+                                <span class="chip-val" id="modelAccVal">99.19%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prediction Showcase Panel -->
+                    <div class="prediction-showcase">
+                        <!-- Left Sub-Panel: Predicted Digit Display -->
+                        <div class="predicted-digit-container">
+                            <span class="metric-caption">CHỮ SỐ DỰ ĐOÁN</span>
+                            <div class="digit-hero-wrap">
+                                <span id="predictedDigit" class="digit-hero-num">—</span>
+                            </div>
+                            <div class="confidence-pill" id="confidenceBadge" title="Loại độ đo và mức độ hiệu chuẩn">
+                                <span class="conf-dot"></span>
+                                <span class="conf-text">Độ tin cậy: —</span>
+                            </div>
+                        </div>
+
+                        <!-- Right Sub-Panel: Preprocessed 28x28 Thumbnail -->
+                        <div class="preprocessed-preview-box">
+                            <span class="metric-caption">CĂN TÂM QUANG HỌC (28×28)</span>
+                            <div class="thumb-frame">
+                                <img id="prepImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="28x28 NIST Normalized Input">
+                                <span class="thumb-grid-overlay" aria-hidden="true"></span>
+                            </div>
+                            <div class="latency-badge" id="latencyDisplay">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                <span>Độ trễ: 0.0 ms</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 10-Class Probability Bars -->
+                    <div class="probability-distribution-block">
+                        <div class="distribution-header">
+                            <span class="dist-title">Phân bố xác suất 10 lớp chữ số (0 – 9):</span>
+                            <span class="dist-note" id="distNoteText">Phân tách nhãn theo phân vị Softmax</span>
+                        </div>
+                        <div class="distribution-bars-list" id="probBarsContainer">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Preprocessing Pipeline Note -->
+                    <div class="pipeline-insight-card">
+                        <div class="insight-icon-box">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+                        </div>
+                        <div class="insight-content">
+                            <span class="insight-title">Quy chuẩn tiền xử lý quang học Center of Mass:</span>
+                            <p class="insight-desc">
+                                Nét vẽ từ canvas được bóc tách khung bao, nén bảo toàn tỷ lệ vào khung <strong>20 × 20 px</strong>, sau đó tính <strong>trọng tâm khối lượng (Center of Mass)</strong> và tịnh tiến chuẩn xác về tọa độ <strong>(14, 14)</strong> của khung chuẩn <strong>28 × 28 NIST</strong> trước khi đưa vào mô hình.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Collapsible Benchmark Comparison Section -->
+            <section class="benchmark-drawer-section" id="benchmarkDrawer">
+                <div class="glass-card benchmark-card">
+                    <div class="benchmark-header">
+                        <div>
+                            <span class="eyebrow-tag">KẾT QUẢ THỰC NGHIỆM ĐÃ KIỂM CHỨNG</span>
+                            <h3 class="benchmark-title">Bảng đối chuẩn 10 mô hình học máy trên 10.000 ảnh MNIST Test Set</h3>
+                        </div>
+                        <span class="benchmark-badge-verified">100% Code thật · Test thật</span>
+                    </div>
+
+                    <div class="benchmark-table-wrapper">
+                        <table class="benchmark-table">
+                            <thead>
+                                <tr>
+                                    <th>Xếp hạng</th>
+                                    <th>Mô hình</th>
+                                    <th>Không gian đặc trưng</th>
+                                    <th>Tập huấn luyện</th>
+                                    <th>Test Accuracy</th>
+                                    <th>Số ảnh sai / 10k</th>
+                                    <th>Độ trễ suy luận</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="row-highlight-top">
+                                    <td><span class="rank-pill rank-1">#1</span></td>
+                                    <td><strong>Modern CNN Baseline</strong></td>
+                                    <td>Learned Conv (28×28)</td>
+                                    <td>Full 60.000</td>
+                                    <td><span class="acc-badge">99.19%</span></td>
+                                    <td>81</td>
+                                    <td>0.516 ms</td>
+                                </tr>
+                                <tr class="row-highlight-val">
+                                    <td><span class="rank-pill">#2</span></td>
+                                    <td>Modern CNN Validation</td>
+                                    <td>Learned Conv (28×28)</td>
+                                    <td>50k train / 10k val</td>
+                                    <td><span class="acc-badge">99.00%</span></td>
+                                    <td>100</td>
+                                    <td>0.516 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-pill">#3</span></td>
+                                    <td>SVM (RBF Kernel) + PCA</td>
+                                    <td>PCA Compression (154D)</td>
+                                    <td>Full 60.000</td>
+                                    <td>98.54%</td>
+                                    <td>146</td>
+                                    <td>1.250 ms</td>
+                                </tr>
+                                <tr class="row-highlight-feature">
+                                    <td><span class="rank-pill">#4</span></td>
+                                    <td>SVM RBF Deskew + PCA</td>
+                                    <td>Deskewed + PCA (112D)</td>
+                                    <td>Subset 10.000</td>
+                                    <td><span class="acc-badge">97.97%</span></td>
+                                    <td>203</td>
+                                    <td>0.685 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-pill">#5</span></td>
+                                    <td>SVM RBF Deskew Raw</td>
+                                    <td>Deskewed Pixels (784D)</td>
+                                    <td>Subset 10.000</td>
+                                    <td>97.77%</td>
+                                    <td>223</td>
+                                    <td>2.140 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-pill">#6</span></td>
+                                    <td>SVM RBF (HOG 324D)</td>
+                                    <td>HOG Features (324D)</td>
+                                    <td>Subset 10.000</td>
+                                    <td>97.58%</td>
+                                    <td>242</td>
+                                    <td>1.120 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-pill">#7</span></td>
+                                    <td>k-NN (k=3) + PCA</td>
+                                    <td>PCA Compression (154D)</td>
+                                    <td>Full 60.000</td>
+                                    <td>97.31%</td>
+                                    <td>269</td>
+                                    <td>68.500 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-pill">#8</span></td>
+                                    <td>SVM (RBF Kernel) Raw</td>
+                                    <td>Raw Pixels (784D)</td>
+                                    <td>Subset 10.000</td>
+                                    <td>96.86%</td>
+                                    <td>314</td>
+                                    <td>2.180 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-pill">#9</span></td>
+                                    <td>Random Forest (150 cây)</td>
+                                    <td>Raw Pixels (784D)</td>
+                                    <td>Subset 10.000</td>
+                                    <td>95.28%</td>
+                                    <td>472</td>
+                                    <td>1.180 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-pill">#10</span></td>
+                                    <td>k-NN (k=3, Euclidean)</td>
+                                    <td>Raw Pixels (784D)</td>
+                                    <td>Subset 10.000</td>
+                                    <td>95.17%</td>
+                                    <td>483</td>
+                                    <td>14.250 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-pill">#11</span></td>
+                                    <td>Linear SVM (C=0.01)</td>
+                                    <td>Raw Pixels (784D)</td>
+                                    <td>Subset 10.000</td>
+                                    <td>90.79%</td>
+                                    <td>921</td>
+                                    <td>0.150 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-pill">#12</span></td>
+                                    <td>Bernoulli Naive Bayes</td>
+                                    <td>Binarized Pixels (784D)</td>
+                                    <td>Subset 10.000</td>
+                                    <td>84.40%</td>
+                                    <td>1.560</td>
+                                    <td>0.080 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-pill">#13</span></td>
+                                    <td>Gaussian Naive Bayes</td>
+                                    <td>Raw Pixels (784D)</td>
+                                    <td>Subset 10.000</td>
+                                    <td>55.80%</td>
+                                    <td>4.420</td>
+                                    <td>0.120 ms</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Editorial Minimal Footer -->
+        <footer class="app-footer">
+            <div class="footer-inner">
+                <div class="footer-left">
+                    <span class="footer-logo">CHỮ SỐ VIẾT TAY</span>
+                    <span class="footer-sub">Báo cáo Bài tập lớn Học phần Nhận dạng mẫu — Đề tài 1: Nhận dạng chữ số MNIST</span>
+                </div>
+                <div class="footer-right">
+                    <span class="footer-tag">Trường Đại học Thủy Lợi</span>
+                    <span class="footer-dot">·</span>
+                    <span class="footer-tag">Khoa Công nghệ Thông tin</span>
+                    <span class="footer-dot">·</span>
+                    <span class="footer-tag">Nhóm 03 (K63/K64 CNTT)</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
