@@ -1,7 +1,10 @@
 # 🎯 NHẬN DẠNG CHỮ SỐ VIẾT TAY (MNIST DATASET)
 ### BÀI TẬP LỚN MÔN NHẬN DẠNG MẪU (PATTERN RECOGNITION) — ĐỀ TÀI 1
 **Trường Đại học Thủy Lợi — Khoa Công nghệ Thông tin — Bộ môn Khoa học Máy tính**  
-**Nhóm thực hiện:** Nhóm 03 &bull; **Niên khóa:** Năm 4  
+**Nhóm thực hiện:** Nhóm 03 &bull; **Lớp:** S26-65TTNT  
+**Sinh viên thực hiện:**  
+- **Đoàn Anh Vũ** (MSV: `2351267280`)  
+- **Nguyễn Hồng Nguyên** (MSV: `2351267273`)  
 **Kho lưu trữ chính thức:** [https://github.com/zudoan/handwritten-digit-recognition](https://github.com/zudoan/handwritten-digit-recognition)
 
 ---
@@ -321,6 +324,8 @@ Toàn bộ tài liệu báo cáo của **Nhóm 03** đã được hoàn thiện 
 
 - **Đơn vị đào tạo:** Trường Đại học Thủy Lợi (TLU) — Khoa Công nghệ Thông tin — Bộ môn Khoa học Máy tính.
 - **Học phần:** Nhận dạng mẫu (*Pattern Recognition*) — Đề tài 1: Nhận dạng chữ số viết tay trên MNIST.
-- **Nhóm thực hiện:** **Nhóm 03**.
+- **Nhóm thực hiện:** **Nhóm 03** (Lớp: `S26-65TTNT`):
+  - **Đoàn Anh Vũ** — MSV: `2351267280`
+  - **Nguyễn Hồng Nguyên** — MSV: `2351267273`
 - **Chủ sở hữu kho lưu trữ:** [@zudoan](https://github.com/zudoan) ([https://github.com/zudoan/handwritten-digit-recognition](https://github.com/zudoan/handwritten-digit-recognition)).
 - **Giấy phép:** Phục vụ mục đích học thuật, nghiên cứu và giáo dục.
