@@ -454,29 +454,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
             modelsRegistry = {};
             modelSelect.innerHTML = "";
-            const officialGroup = document.createElement("optgroup");
-            officialGroup.label = "--- CÁC MÔ HÌNH CHÍNH THỨC (VERIFIED) ---";
-            const legacyGroup = document.createElement("optgroup");
-            legacyGroup.label = "--- CẤU HÌNH SO SÁNH / LEGACY ---";
 
             data.models.forEach((m) => {
                 modelsRegistry[m.id] = m;
                 const opt = document.createElement("option");
                 opt.value = m.id;
-                opt.textContent = `${m.name} [Test Acc: ${m.accuracy}]`;
+                opt.textContent = m.name;
                 if (m.id === "cnn") opt.selected = true;
-
-                if (m.is_official) {
-                    officialGroup.appendChild(opt);
-                } else {
-                    legacyGroup.appendChild(opt);
-                }
+                modelSelect.appendChild(opt);
             });
-
-            modelSelect.appendChild(officialGroup);
-            if (legacyGroup.children.length > 0) {
-                modelSelect.appendChild(legacyGroup);
-            }
 
             // Populate initial model meta
             const initialId = modelSelect.value || "cnn";

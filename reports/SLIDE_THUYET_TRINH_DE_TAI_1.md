@@ -1,162 +1,138 @@
 # ĐỀ CƯƠNG SLIDE BÁO CÁO THUYẾT TRÌNH BÀI TẬP LỚN
 ## ĐỀ TÀI 1: NHẬN DẠNG CHỮ SỐ VIẾT TAY (MNIST DATASET)
-**Môn học: Nhận dạng mẫu (Pattern Recognition) — Nhóm 03**
-**Trường Đại học Thủy Lợi — Khoa Công nghệ Thông tin**
-
-> [!WARNING]
-> **TÀI LIỆU LỊCH SỬ / BẢN THẢO CŨ (LEGACY DRAFT — NOT FOR SUBMISSION)**  
-> File Markdown này là bản phác thảo slide ban đầu. Bộ slide trình chiếu chính thức đã được thiết kế hoàn thiện, chia tách khoa học 12 slide widescreen không tràn bảng tại:  
-> **[`reports/Slide_Thuyet_Trinh_Nhom_03.pptx`](Slide_Thuyet_Trinh_Nhom_03.pptx)**.
+**Học phần: Nhận dạng mẫu (Pattern Recognition) — Nhóm 03**  
+**Khoa Công nghệ Thông tin — Phân hiệu Trường Đại học Thủy Lợi**
 
 ---
 
 ### SLIDE 1: TRANG BÌA
-- **Tiêu đề**: NGHIÊN CỨU & TRIỂN KHAI CÁC MÔ HÌNH NHẬN DẠNG CHỮ SỐ VIẾT TAY
+- **Tiêu đề**: NGHIÊN CỨU & TRIỂN KHAI CÁC MÔ HÌNH NHẬN DẠNG CHỮ SỐ VIẾT TAY TRÊN BỘ DỮ LIỆU MNIST
 - **Học phần**: Nhận dạng mẫu (*Pattern Recognition*)
 - **Nhóm thực hiện**: Nhóm 03
-- **Thành viên**: `[Họ tên SV 1]`, `[Họ tên SV 2]`, `[Họ tên SV 3]`
-- **Giảng viên hướng dẫn**: `[Điền tên Giảng viên]`
-- **Đơn vị**: Khoa Công nghệ Thông tin - Trường Đại học Thủy Lợi
+- **Sinh viên thực hiện**: 
+  - Đoàn Anh Vũ (MSV: `2351267280`)
+  - Nguyễn Hồng Nguyên (MSV: `2351267273`)
+- **Đơn vị đào tạo**: Khoa Công nghệ Thông tin — Phân hiệu Trường Đại học Thủy Lợi
 
 ---
 
 ### SLIDE 2: BỐI CẢNH & CÂU HỎI NGHIÊN CỨU
-- **Bối cảnh thực tế**: Bài toán nhận dạng chữ số tự động trong phân loại bưu phẩm bưu chính, nhận dạng số tài khoản/séc ngân hàng, số hóa tài liệu hành chính.
+- **Bối cảnh thực tế**: Bài toán nhận dạng chữ số tự động trong bưu chính (Zip Codes), tài chính ngân hàng (séc, phiếu nộp tiền), số hóa tài liệu hồ sơ hành chính.
 - **Thách thức cốt lõi**:
-  - Sự đa dạng về thói quen viết tay cá nhân (nét nghiêng, nét đứt, độ dày bút).
-  - Độ tương đồng thị giác cao giữa các cặp số: $(4 \leftrightarrow 9)$, $(3 \leftrightarrow 5)$, $(7 \leftrightarrow 1)$.
+  - Sự biến thiên đa dạng trong thói quen viết tay cá nhân (nét nghiêng, nét đứt, độ dày bút).
+  - Sự tương đồng thị giác cao giữa các cặp số: $(4 \leftrightarrow 9)$, $(3 \leftrightarrow 5)$, $(7 \leftrightarrow 1)$.
 - **Câu hỏi nghiên cứu trọng tâm**:
-  > *"Đặc trưng và thuật toán nào giúp phân biệt các chữ số hiệu quả nhất?"*
+  > *"Không gian đặc trưng nào và thuật toán học máy nào giúp nhận dạng chữ số viết tay trên MNIST hiệu quả và tối ưu nhất về độ chính xác lẫn độ trễ suy luận?"*
 
 ---
 
 ### SLIDE 3: BỘ DỮ LIỆU THỰC NGHIỆM (MNIST)
-- Nguồn dữ liệu: Yann LeCun / TensorFlow Datasets Catalog.
-- Quy mô: **70,000 ảnh xám** $28 \times 28$ điểm ảnh (784 chiều).
-- Phân chia chuẩn học thuật:
-  - **Train**: 60,000 mẫu (~85.7%).
-  - **Test**: 10,000 mẫu (~14.3%).
-- Đánh giá phân bố: Gần như cân bằng hoàn hảo giữa 10 lớp ($0 \to 9$), độ hỗn loạn thông tin Shannon Entropy đạt $3.32$ bits (tiệm cận cực đại $\log_2 10$).
+- **Nguồn dữ liệu**: Bộ dữ liệu chuẩn học thuật Yann LeCun / TensorFlow MNIST Dataset.
+- **Quy mô**: **70.000 ảnh xám** kích thước $28 \times 28$ điểm ảnh (784 chiều).
+- **Phân chia chuẩn học thuật**:
+  - **Train**: 50.000 mẫu (~71.4%) dùng để huấn luyện mô hình.
+  - **Validation**: 10.000 mẫu (~14.3%) dùng để kiểm chứng và dừng sớm (Early Stopping).
+  - **Test**: 10.000 mẫu (~14.3%) dùng để đối chuẩn độc lập, khách quan 100%.
+- **Đánh giá phân bố**: Phân bố nhãn cân bằng hoàn hảo giữa 10 lớp ($0 \to 9$), độ hỗn loạn thông tin Shannon Entropy đạt $3.32$ bits.
 
 ---
 
 ### SLIDE 4: KHÁM PHÁ DỮ LIỆU CHUYÊN SÂU (EDA)
 - **Mean Digit Images (Ảnh trung bình)**:
-  - Thể hiện dạng hình học trung tâm của từng chữ số. Số '1' tập trung nét thẳng ở giữa, số '0' có vòng oval rỗng.
-- **Variance Heatmaps (Ảnh phương sai)**:
-  - Chỉ ra các vùng điểm ảnh có sự bất đồng thuận lớn nhất giữa các người viết.
-  - Số '4' và '7' có phương sai cao ở nét ngang gạch chân; số '2' có phương sai cao ở vòng xoắn đáy.
-- **Không gian tiềm ẩn t-SNE 2D**:
-  - Các cụm số $0, 1, 6$ tách biệt rõ rệt. Cụm $4, 7, 9$ nằm gần nhau do có chung đặc trưng nét thẳng đứng và nét nghiêng.
+  - Thể hiện dạng hình học đặc trưng trung tâm của từng chữ số. Chữ số '1' tập trung nét thẳng ở giữa; số '0' có vòng oval rỗng đặc trưng.
+- **Variance Heatmaps (Bản đồ nhiệt phương sai)**:
+  - Chỉ ra các vùng điểm ảnh có sự bất đồng thuận lớn nhất giữa người viết.
+  - Chữ số '4' và '7' có phương sai cao ở nét ngang gạch chân; chữ số '2' có phương sai cao ở vòng xoắn đáy.
+- **Không gian tiềm ẩn t-SNE 2D & PCA**:
+  - Các cụm số $0, 1, 6$ tách biệt rất rõ rệt. Cụm $4, 7, 9$ nằm gần nhau do có chung đặc trưng nét thẳng đứng và nét nghiêng.
 
 ---
 
-### SLIDE 5: KỸ THUẬT TRÍCH XUẤT ĐẶC TRƯNG
-Nhóm thiết kế và so sánh **4 không gian đặc trưng**:
+### SLIDE 5: TIỀN XỬ LÝ ẢNH & TRÍCH XUẤT ĐẶC TRƯNG
+Nhóm thiết kế và áp dụng các kỹ thuật biểu diễn dữ liệu:
 1. **Raw Pixels (784D)**: Điểm ảnh chuẩn hóa $[0.0, 1.0]$.
-2. **Deskewing (Nắn góc nghiêng)**: Dùng mô-men quán tính ảnh trung tâm $\alpha = \mu_{11} / \mu_{02}$ để thực hiện biến đổi Affine, nắn thẳng chữ số bị viết xiên.
-3. **PCA (Principal Component Analysis)**: Giảm từ 784 chiều xuống **154 chiều** giữ nguyên 95% phương sai (giảm $5.1\times$ dung lượng).
-4. **HOG (Histogram of Oriented Gradients)**: Trích xuất 324 chiều đặc trưng hướng biên nét viết.
+2. **Deskewing (Nắn thẳng góc nghiêng nét viết)**:
+   - Dùng mô-men quán tính ảnh trung tâm $\alpha = \mu_{11} / \mu_{02}$ để thực hiện biến đổi Affine, đưa nét chữ xiên về phương thẳng đứng.
+3. **PCA (Principal Component Analysis 95% phương sai)**:
+   - Áp dụng trên tập ảnh đã nắn thẳng Deskewing, giảm từ **784 chiều** xuống **113 chiều** (giảm 6.9 lần số chiều, loại bỏ nhiễu biên và tăng tốc suy luận).
+4. **Binarization (Nhị phân hóa)**: Ngưỡng $0.2$ phục vụ mô hình Bernoulli Naive Bayes.
 
 ---
 
-### SLIDE 6: CƠ SỞ TOÁN HỌC CÁC THUẬT TOÁN ML KINH ĐIỂN
-- **Naive Bayes (Gaussian & Bernoulli)**:
-  - Áp dụng định lý Bayes $P(Y|X) \propto P(Y) \prod P(X_j|Y)$. Giả định các pixel độc lập có điều kiện.
-- **$k$-Nearest Neighbors ($k$-NN)**:
-  - Phân loại phi tham số dựa trên khoảng cách Euclidean trong không gian nhiều chiều.
-  - Kết hợp PCA giúp loại bỏ "lời nguyền số chiều" và tăng tốc độ tìm kiếm láng giềng.
-- **Support Vector Machine (SVM)**:
-  - Tìm siêu phẳng tối ưu cực đại hóa biên phân cách (Max-margin hyperplane).
-  - Áp dụng **RBF Kernel** $K(x, z) = \exp(-\gamma \|x - z\|^2)$ chiếu phi tuyến vào không gian vô hạn chiều.
+### SLIDE 6: CÁC THUẬT TOÁN HỌC MÁY KINH ĐIỂN
+- **Bernoulli Naive Bayes**:
+  - Áp dụng định lý Bayes trên không gian nhị phân, tốc độ cực nhanh ($1.66$ ms), phù hợp làm baseline khởi điểm.
+- **Random Forest (150 cây quyết định)**:
+  - Học tập hợp (Ensemble Learning) phương pháp Bagging với 150 Decision Trees, không bị overfit, đạt $96.99\%$.
+- **$k$-Nearest Neighbors ($k$-NN, $k=3$, Trọng số khoảng cách nghịch đảo)**:
+  - Huấn luyện trên không gian đặc trưng **Deskew + PCA (113D)** giúp triệt tiêu "lời nguyền số chiều", đạt độ chính xác cao $98.06\%$.
+- **Support Vector Machine (SVM RBF Kernel)**:
+  - Tìm siêu phẳng tối ưu cực đại hóa khoảng cách lề lồi trong không gian Hilbert tái tạo qua hàm nhân RBF ($C=5.0$, $\gamma=\text{scale}$), kết hợp **Deskew + PCA (113D)** đạt xuất sắc **$98.79\%$** (chỉ 121 lỗi).
 
 ---
 
-### SLIDE 7: MÔ HÌNH HỌC SÂU SÁNG TẠO (MODERN CNN)
-- **Kiến trúc mạng tích chập LeNet-5 hiện đại hóa**:
-  - 3 khối tích chập: `Conv2D(3x3) -> BatchNorm -> ReLU -> MaxPool(2x2)`.
-  - Bộ phân loại: `Dropout(0.4) -> Linear(512 -> 128) -> ReLU -> Dropout(0.2) -> Linear(128 -> 10)`.
-- **Cơ chế học đặc trưng tự động**:
-  - Tầng nông: Học bộ lọc phát hiện cạnh, góc, viền.
-  - Tầng sâu: Tổng hợp thành các cung tròn, vòng khép kín của số 8, 6, 0.
+### SLIDE 7: HỌC SÂU MẠNG TÍCH CHẬP (MODERN CNN)
+- **Kiến trúc mạng tích chập hiện đại (3 khối Convolutional)**:
+  - Khối 1: `Conv2D(32) -> BatchNorm -> ReLU -> Conv2D(32) -> MaxPool(2x2) -> Dropout(0.25)`
+  - Khối 2: `Conv2D(64) -> BatchNorm -> ReLU -> Conv2D(64) -> MaxPool(2x2) -> Dropout(0.25)`
+  - Khối 3: `Conv2D(128) -> BatchNorm -> ReLU -> Flatten -> Dropout(0.4)`
+  - Khối phân loại: `Linear(128) -> ReLU -> Dropout(0.3) -> Linear(10)`
+- **Chiến lược huấn luyện**:
+  - Tối ưu bằng **Adam**, học trên 50.000 mẫu train, kiểm tra sau mỗi epoch trên 10.000 mẫu validation.
+  - Áp dụng **Early Stopping** dừng tối ưu tại Epoch 17 với Validation Loss cực tiểu $0.0249$.
+  - Đạt đỉnh cao hiệu năng **$99.42\%$** Accuracy (chỉ sai **58 ảnh** trên 10.000 ảnh test).
 
 ---
 
-### SLIDE 8: BẢNG SO SÁNH ĐỐI CHUẨN HIỆU NĂNG (BENCHMARK)
+### SLIDE 8: BẢNG SO SÁNH ĐỐI CHUẨN HIỆU NĂNG TOÀN DIỆN (BENCHMARK)
 
-| Thuật toán | Đặc trưng | Chiều | Số mẫu Train | **Độ chính xác (Accuracy)** | Macro F1 | Thời gian Train | Độ trễ suy luận |
-|:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Modern CNN** | Learned Conv | 784 | 60,000 | **99.32%** | **99.31%** | 198.55s | 0.079 ms |
-| **SVM (RBF Kernel)** | **PCA (95% Var)** | 154 | 60,000 | **98.54%** | **98.53%** | 27.88s | 0.866 ms |
-| **SVM (RBF Kernel)** | Deskewed + PCA | 154 | 10,000 | **97.91%** | 97.90% | 0.83s | 0.196 ms |
-| **SVM (RBF Kernel)** | HOG Features | 324 | 10,000 | **97.46%** | 97.46% | 1.13s | 0.282 ms |
-| **$k$-NN ($k=3$)** | PCA (95% Var) | 154 | 60,000 | **97.31%** | 97.29% | 0.00s | 0.077 ms |
-| **Random Forest** | Raw Pixels | 784 | 10,000 | **95.26%** | 95.22% | 0.33s | 0.005 ms |
-| **$k$-NN ($k=3$)** | Raw Pixels | 784 | 10,000 | **94.86%** | 94.85% | 0.01s | 0.074 ms |
-| **Linear SVM** | Raw Pixels | 784 | 60,000 | **91.84%** | 91.71% | 28.02s | 0.002 ms |
-| **Bernoulli NB** | Binarized Pixels | 784 | 60,000 | **84.46%** | 84.26% | 0.35s | 0.004 ms |
-| **Gaussian NB** | Raw Pixels | 784 | 60,000 | **55.58%** | 50.90% | 0.21s | 0.023 ms |
+| Xếp hạng | Mô hình | Không gian đặc trưng | Tập huấn luyện | Accuracy | Macro F1 | Số ảnh sai / 10k | Độ trễ suy luận |
+|:---:|---|---|---|:---:|:---:|:---:|:---:|
+| **#1** | **Modern CNN** | Learned Conv (28×28) | 50k train / 10k val | **99.42%** | **99.42%** | **58** | 8.85 ms |
+| **#2** | **SVM** | Deskewed + PCA 95% (113D) | 50.000 mẫu | **98.79%** | **98.78%** | **121** | 20.03 ms |
+| **#3** | **k-NN** | Deskewed + PCA 95% (113D) | 50.000 mẫu | **98.06%** | **98.05%** | **194** | 63.38 ms |
+| **#4** | **Random Forest** | Raw Pixels (784D) | 50.000 mẫu | **96.99%** | **96.97%** | **301** | 56.72 ms |
+| **#5** | **Bernoulli Naive Bayes** | Binarized Pixels (784D) | 50.000 mẫu | **84.46%** | **84.27%** | **1.554** | 1.66 ms |
 
 ---
 
-### SLIDE 9: PHÂN TÍCH MA TRẬN NHẦM LẪN (CONFUSION MATRIX)
-- **Cặp nhầm lẫn phổ biến nhất**:
-  - $4 \to 9$: Nét gạch đỉnh của số 4 bị nối liền hoặc viết quá khép, giống vòng tròn của số 9.
-  - $7 \to 2$ hoặc $7 \to 1$: Số 7 thiếu nét gạch ngang giữa thân hoặc viết thẳng như số 1.
-  - $3 \to 5$: Phần móc cung tròn uốn lượn có cấu trúc hình học tương đồng cao.
-- Mô hình **CNN** gần như xóa bỏ sự nhầm lẫn này (độ chính xác từng lớp đều trên 99.0%).
+### SLIDE 9: MA TRẬN NHẦM LẪN & ĐÁNH GIÁ TỪNG LỚP
+- **Phân bố nhầm lẫn của Modern CNN**:
+  - Lớp nhận dạng tốt nhất: Chữ số **0** ($99.80\%$ Recall, chỉ sai 2 ảnh) và chữ số **1** ($99.56\%$ Recall).
+  - Lớp gặp thách thức nhất: Chữ số **5** ($98.09\%$ Recall, 17 ảnh nhầm sang 3 do cùng nét cong bụng dưới).
+- **Phân tích 58 mẫu dự đoán sai**:
+  - Nhóm 1: Nét viết bất thường, dị biệt (Outliers) từ người viết tự do.
+  - Nhóm 2: Nhầm lẫn cặp số tương đồng hình thái học: $(4 \leftrightarrow 9)$, $(3 \leftrightarrow 5)$, $(7 \leftrightarrow 2)$.
 
 ---
 
-### SLIDE 10: PHÂN TÍCH LỖI CHUYÊN SÂU (DEEP ERROR ANALYSIS)
-- Lọc top 20 mẫu ảnh lỗi mà các mô hình dự đoán sai:
-  - **Trường hợp 1: Nhãn gốc trong MNIST bị gán nhãn sai** (Label Noise).
-  - **Trường hợp 2: Chữ số cực kỳ mơ hồ (Ambiguous Digits)**: Thậm chí con người khi nhìn bằng mắt thường cũng khó phân định đó là số 4 hay 9.
-  - **Trường hợp 3: Nét đứt quãng hoặc mực bị loang**: Làm mất tính liên tục cấu trúc tô-pô.
+### SLIDE 10: ỨNG DỤNG WEB DEMO TƯƠNG TÁC THỜI GIAN THỰC
+- **Kiến trúc ứng dụng**:
+  - Backend: **FastAPI** hiệu năng cao, nạp sẵn trọng số vào RAM, xử lý phi đồng bộ (Async/Await).
+  - Frontend: HTML5 Canvas vẽ tay độ phân giải cao, hỗ trợ chuột và màn hình cảm ứng.
+- **Pipeline tiền xử lý Center of Mass quang học**:
+  - Bóc tách nét chữ bằng `cv2.boundingRect()` $\to$ Thu phóng bảo toàn tỷ lệ vào khung $20 \times 20$ $\to$ Tịnh tiến trọng tâm quang học khối lượng về chính giữa tọa độ chuẩn $(14.0, 14.0)$ của khung ảnh $28 \times 28$ NIST.
+- **Trải nghiệm người dùng**:
+  - Hiển thị phân bố xác suất thời gian thực 10 lớp chữ số $(0 \to 9)$.
+  - Tích hợp 10 mẫu kiểm thử chuẩn NIST từ tập test để thử nghiệm tức thì.
+  - Footer tối giản, chỉn chu: *Phân hiệu Đại học Thủy Lợi*.
 
 ---
 
-### SLIDE 11: TRẢ LỜI CÂU HỎI NGHIÊN CỨU KHOA HỌC
-> *"Đặc trưng và thuật toán nào giúp phân biệt các chữ số hiệu quả nhất?"*
-1. **Đặc trưng tối ưu nhất**:
-   - **Learned Features (CNN)**: Vượt trội nhất vì không cần trích xuất thủ công, tự học theo cấu trúc không gian 2D.
-   - **PCA (154D)**: Là biểu diễn đặc trưng nén hiệu quả nhất trong ML truyền thống (tiết kiệm $5\times$ bộ nhớ, cải thiện $k$-NN từ $94.86\% \to 97.31\%$).
-2. **Thuật toán tối ưu nhất**:
-   - **Modern CNN** (>99.32%) dẫn đầu về độ chính xác và khả năng thích nghi.
-   - **SVM (RBF Kernel + PCA)** (>98.54%) là thuật toán ML cổ điển mạnh mẽ nhất, thời gian train chỉ 27 giây.
+### SLIDE 11: BỘ KIỂM THỬ TỰ ĐỘNG (AUTOMATED TEST SUITE)
+- Thiết kế **28 ca kiểm thử tự động (Unit & Integration Tests)** trong `tests/test_pipeline.py`.
+- Bảo đảm 100% không rò rỉ dữ liệu (Zero Data Leakage giữa Train và Test).
+- Kiểm tra toàn diện kích thước ma trận, hàm trích xuất Deskewing, PCA 113D, lan truyền tiến CNN và các API endpoints của Web Server.
+- Tỷ lệ vượt qua: **28 / 28 Tests Passed (100%)**.
 
 ---
 
-### SLIDE 12: DEMO ỨNG DỤNG WEB TƯƠNG TÁC (+0.5 ĐIỂM THƯỞNG)
-- **Kiến trúc hệ thống**: Frontend Vanilla HTML5 Canvas + Backend FastAPI.
-- **Tính năng nổi bật**:
-  - Bảng vẽ tương tác mượt mà bằng chuột hoặc màn hình cảm ứng.
-  - Cơ chế tiền xử lý quang học **Center of Mass** chuẩn hóa tọa độ tâm $(14, 14)$ như tập MNIST gốc.
-  - Tùy chọn chuyển đổi tức thì giữa các mô hình (CNN, SVM, k-NN, GNB).
-  - Hiển thị trực quan thanh xác suất 10 lớp và độ trễ suy luận thời gian thực (chỉ 10–15 ms).
-  - Tích hợp sẵn thanh Palette 10 mẫu test chọn nhanh.
-
----
-
-### SLIDE 13: ĐIỂM SÁNG TẠO & ĐÓNG GÓP CỦA DỰ ÁN
-1. **Tính sáng tạo (+0.5đ)**:
-   - Triển khai mạng nơ-ron tích chập Modern CNN với BatchNorm và Dropout.
-   - Thực nghiệm kỹ thuật tiền xử lý hình học Deskewing dựa trên mô-men bậc hai.
-2. **Sản phẩm hoàn thiện (+0.5đ)**:
-   - Ứng dụng Web hoàn chỉnh, trực quan, thẩm mỹ cao theo chuẩn Glassmorphism.
-3. **Quy chuẩn mã nguồn**:
-   - Cấu trúc module hóa chuyên nghiệp, có file hướng dẫn cài đặt `requirements.txt`, Jupyter Notebook chi tiết và chạy được ngay với 1 lệnh `python run_app.py`.
-
----
-
-### SLIDE 14: KẾT LUẬN & HƯỚNG PHÁT TRIỂN
-- **Kết luận**: Nhóm đã hoàn thành xuất sắc 100% mục tiêu bài tập lớn theo đúng thang điểm và hướng dẫn của bộ môn.
-- **Hướng phát triển tương lai**:
-  - Mở rộng bài toán sang nhận dạng chuỗi chữ số viết tay liên tục (như mã bưu điện, số điện thoại, biển số xe).
-  - Triển khai mô hình Vision Transformer (ViT) nhẹ hoặc chuyển đổi sang định dạng ONNX/TensorRT để chạy trên thiết bị biên nhúng (Edge AI).
-
----
-
-### SLIDE 15: HỎI VÀ ĐÁP (Q&A)
-- **Cảm ơn Thầy/Cô và các bạn đã chú ý lắng nghe!**
-- *Nhóm 03 xin trân trọng đón nhận các câu hỏi và ý kiến đóng góp của Hội đồng.*
+### SLIDE 12: KẾT LUẬN & HƯỚNG PHÁT TRIỂN
+- **Kết luận khoa học**:
+  1. Kỹ thuật **Deskewing + PCA (113 chiều)** tăng cường vượt bậc độ chính xác của các thuật toán ML kinh điển (SVM vọt lên $98.79\%$, k-NN vọt lên $98.06\%$).
+  2. **Modern CNN** là kiến trúc ưu việt nhất với khả năng tự động học biểu diễn đặc trưng không gian, đạt đỉnh cao **$99.42\%$** Accuracy.
+- **Đóng góp thực tiễn**:
+  - Xây dựng thành công hệ sinh thái hoàn chỉnh từ Notebook nghiên cứu, kho mô hình chuẩn, bộ test tự động đến Web Demo phục vụ giảng dạy và ứng dụng thực tế.
+- **Hướng phát triển**:
+  - Mở rộng nhận dạng chuỗi nhiều chữ số liên tục bằng kiến trúc CRNN + CTC Loss.
+  - Lượng tử hóa mô hình INT8 / ONNX để nhúng lên thiết bị di động và camera AI biên.

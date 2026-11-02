@@ -1,6 +1,6 @@
 # 🎯 NHẬN DẠNG CHỮ SỐ VIẾT TAY (MNIST DATASET)
 ### BÀI TẬP LỚN MÔN NHẬN DẠNG MẪU (PATTERN RECOGNITION) — ĐỀ TÀI 1
-**Trường Đại học Thủy Lợi — Khoa Công nghệ Thông tin — Bộ môn Khoa học Máy tính**  
+**Phân hiệu Trường Đại học Thủy Lợi — Khoa Công nghệ Thông tin — Bộ môn Khoa học Máy tính**  
 **Nhóm thực hiện:** Nhóm 03 &bull; **Lớp:** S26-65TTNT  
 **Sinh viên thực hiện:**  
 - **Đoàn Anh Vũ** (MSV: `2351267280`)  
@@ -20,23 +20,22 @@
   <img src="https://img.shields.io/badge/Deep%20Learning-PyTorch%202.x-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch"/>
   <img src="https://img.shields.io/badge/Machine%20Learning-scikit--learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white" alt="scikit-learn"/>
   <img src="https://img.shields.io/badge/Test%20Suite-28%20Passed%20(100%25)-brightgreen?style=for-the-badge" alt="Tests"/>
-  <img src="https://img.shields.io/badge/Top%20Accuracy-99.19%25%20(CNN)-success?style=for-the-badge" alt="Top Accuracy"/>
+  <img src="https://img.shields.io/badge/Top%20Accuracy-99.42%25%20(Modern%20CNN)-success?style=for-the-badge" alt="Top Accuracy"/>
 </p>
 
 ---
 
 ## 📑 MỤC LỤC
 1. [Tổng Quan Đề Tài & Câu Hỏi Nghiên Cứu](#1-tổng-quan-đề-tài--câu-hỏi-nghiên-cứu)
-2. [Điểm Nhấn Kỹ Thuật & Kết Quả Nổi Bật](#2-điểm-nhấn-kỹ-thuật--kết-quả-nổi-bật)
+2. [Điểm Nhấn Kỹ Thuật & Bảng Đối Chuẩn (Benchmark)](#2-điểm-nhấn-kỹ-thuật--bảng-đối-chuẩn-benchmark)
 3. [Cơ Sở Dữ Liệu & Quy Chuẩn Tiền Xử Lý](#3-cơ-sở-dữ-liệu--quy-chuẩn-tiền-xử-lý)
 4. [Không Gian Đặc Trưng & Cơ Sở Toán Học](#4-không-gian-đặc-trưng--cơ-sở-toán-học)
-5. [Bảng Đối Chuẩn Thực Nghiệm Toàn Diện (Benchmark)](#5-bảng-đối-chuẩn-thực-nghiệm-toàn-diện-benchmark)
-6. [Phân Tích & Giải Thích Khoa Học](#6-phân-tích--giải-thích-khoa-học)
-7. [Ứng Dụng Web Studio Tương Tác](#7-ứng-dụng-web-studio-tương-tác)
-8. [Cấu Trúc Thư Mục Dự Án](#8-cấu-trúc-thư-mục-dự-án)
-9. [Hướng Dẫn Cài Đặt & Khởi Chạy](#9-hướng-dẫn-cài-đặt--khởi-chạy)
-10. [Hồ Sơ Báo Cáo Khoa Học & Slide Thuyết Trình](#10-hồ-sơ-báo-cáo-khoa-học--slide-thuyết-trình)
-11. [Đội Ngũ Thực Hiện & Bản Quyền](#11-đội-ngũ-thực-hiện--bản-quyền)
+5. [Phân Tích Chuyên Sâu & Ma Trận Nhầm Lẫn](#5-phân-tích-chuyên-sâu--ma-trận-nhầm-lẫn)
+6. [Ứng Dụng Web Studio Tương Tác Thời Gian Thực](#6-ứng-dụng-web-studio-tương-tác-thời-gian-thực)
+7. [Cấu Trúc Thư Mục Dự Án Chuẩn Hóa](#7-cấu-trúc-thư-mục-dự-án-chuẩn-hóa)
+8. [Hướng Dẫn Cài Đặt & Khởi Chạy](#8-hướng-dẫn-cài-đặt--khởi-chạy)
+9. [Hồ Sơ Báo Cáo Khoa Học & Slide Thuyết Trình](#9-hồ-sơ-báo-cáo-khoa-học--slide-thuyết-trình)
+10. [Đội Ngũ Thực Hiện & Bản Quyền](#10-đội-ngũ-thực-hiện--bản-quyền)
 
 ---
 
@@ -45,210 +44,176 @@
 Nhận dạng chữ số viết tay (*Handwritten Digit Recognition*) là bài toán kinh điển đặt nền móng cho ngành **Nhận dạng mẫu (Pattern Recognition)** và **Thị giác máy tính (Computer Vision)**.
 
 Mục tiêu trọng tâm của dự án:
-- **Câu hỏi nghiên cứu cốt lõi:** *"Không gian đặc trưng nào và thuật toán nào giúp phân biệt các chữ số viết tay trên MNIST hiệu quả và tối ưu nhất về cả độ chính xác lẫn độ trễ suy luận?"*
-- Đối chuẩn khoa học và công bằng giữa **Học máy thống kê cổ điển** (SVM Linear/RBF, $k$-NN, Random Forest, Naive Bayes) và **Học sâu hiện đại** (Modern CNN).
-- Khảo sát tác động của các kỹ thuật xử lý ảnh hình thái học: nắn thẳng góc nghiêng nét viết (**Deskewing** bằng moment quán tính bậc 2), giảm chiều dữ liệu (**PCA** giữ $\ge 95\%$ phương sai), và trích xuất đặc trưng biên cạnh cục bộ (**HOG**).
-- Triển khai sản phẩm hoàn chỉnh: Hệ thống Web Studio tương tác thời gian thực đạt chuẩn giao diện cao cấp (*Soft Glass & Editorial Minimalism*), bộ kiểm thử tự động 28 bài test, cùng toàn bộ hồ sơ báo cáo khoa học Word (28 trang), PDF và slide PowerPoint.
+- **Câu hỏi nghiên cứu cốt lõi:** *"Không gian đặc trưng nào và thuật toán học máy nào giúp nhận dạng chữ số viết tay trên MNIST hiệu quả và tối ưu nhất về cả độ chính xác lẫn độ trễ suy luận?"*
+- Khảo sát thực nghiệm đối chứng giữa **Học máy thống kê kinh điển** (SVM nhân RBF, $k$-NN, Random Forest, Bernoulli Naive Bayes) và **Học sâu mạng tích chập hiện đại** (Modern CNN).
+- Đánh giá vai trò đột phá của kỹ thuật xử lý hình thái học: nắn thẳng góc nghiêng nét viết (**Deskewing** bằng moment quán tính bậc 2) kết hợp giảm chiều dữ liệu (**PCA** giữ $\ge 95\%$ phương sai — 113 chiều).
+- Triển khai sản phẩm hoàn chỉnh: Ứng dụng Web Studio tương tác thời gian thực đạt chuẩn giao diện cao cấp (*Soft Glassmorphism*), căn tâm quang học Center of Mass 28×28 NIST, bộ kiểm thử tự động 28/28 bài test (100% PASS), cùng hồ sơ báo cáo khoa học Word/PDF (15 trang in ấn) và Slide PowerPoint widescreen 16:9.
 
 ---
 
-## 2. ĐIỂM NHẤN KỸ THUẬT & KẾT QUẢ NỔI BẬT
+## 2. ĐIỂM NHẤN KỸ THUẬT & BẢNG ĐỐI CHUẨN (BENCHMARK)
 
-```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                                 KẾT QUẢ THỰC NGHIỆM ĐỈNH CAO                           │
-├────────────────────────────────┬───────────────────────────────┬───────────────────────┤
-│ 🏆 TOP 1 DEEP LEARNING          │ 🥇 TOP 1 CLASSICAL ML         │ ⚡ SINGLE-INFERENCE   │
-│ Modern CNN (Full 60k Train)    │ SVM RBF + Deskew + PCA 112D   │ Latency (PyTorch CPU) │
-│ Accuracy: 99.19% (81 lỗi/10k)  │ Accuracy: 97.97% (203 lỗi/10k)│ 0.516 ms / ảnh        │
-│ Throughput: 9,426 mẫu/giây     │ Throughput: 5,551 mẫu/giây    │ Model Size: 0.62 MB   │
-└────────────────────────────────┴───────────────────────────────┴───────────────────────┘
-```
+Toàn bộ 5 mô hình chính thức được huấn luyện theo quy chuẩn khoa học từ **Notebook 02** trên tập **50.000 mẫu Train** (kết hợp 10.000 mẫu Validation cho CNN) và được đối chuẩn độc lập, khách quan 100% trên **10.000 ảnh MNIST Test Set**:
 
-- **Tính toàn vẹn & Không rò rỉ dữ liệu (No Data Leakage):** Mọi siêu tham số được chọn lọc thông qua tập validation riêng biệt ($50.000$ train / $10.000$ val) với cơ chế Early Stopping nghiêm ngặt trước khi đánh giá độc lập duy nhất một lần trên $10.000$ ảnh test.
-- **Tập kiểm chuẩn đối chứng có kiểm soát (Controlled Benchmark):** 12 mô hình được đo đạc song song trên **cùng một tập 10.000 mẫu train phân tầng cố định** (`random_state=42`) để bảo đảm tính công bằng tuyệt đối khi so sánh chéo.
-- **Xử lý ảnh chuẩn quang học NIST:** Khung vẽ canvas được tích hợp pipeline tự động căn chỉnh tâm khối lượng nét mực (**Center of Mass**) đưa về khung $28 \times 28$ chuẩn mực của Yann LeCun.
+| Xếp hạng | Mô hình | Không gian đặc trưng | Tập huấn luyện | Test Accuracy | Macro F1 | Số ảnh sai / 10k | Độ trễ suy luận |
+|:---:|---|---|---|:---:|:---:|:---:|:---:|
+| **#1** | **Modern CNN** | Learned Conv (28×28) | 50k train / 10k val | **99.42%** | **99.42%** | **58** | 8.85 ms |
+| **#2** | **SVM** | Deskewed + PCA 95% (113D) | 50.000 mẫu | **98.79%** | **98.78%** | **121** | 20.03 ms |
+| **#3** | **k-NN** | Deskewed + PCA 95% (113D) | 50.000 mẫu | **98.06%** | **98.05%** | **194** | 63.38 ms |
+| **#4** | **Random Forest** | Raw Pixels (784D) | 50.000 mẫu | **96.99%** | **96.97%** | **301** | 56.72 ms |
+| **#5** | **Bernoulli Naive Bayes** | Binarized Pixels (784D, bin=0.2) | 50.000 mẫu | **84.46%** | **84.27%** | **1.554** | 1.66 ms |
+
+> **Ghi chú:** Các mô hình thử nghiệm ban đầu (baseline 10k mẫu, CNN 60k chưa chuẩn hóa dừng sớm) đã được gom nhóm và khóa lưu trữ an toàn trong thư mục `archive_legacy/` để đảm bảo tính tinh gọn và đồng nhất của hệ thống.
 
 ---
 
 ## 3. CƠ SỞ DỮ LIỆU & QUY CHUẨN TIỀN XỬ LÝ
 
 ### 3.1. Phân bố tập dữ liệu (MNIST Standard Splits)
-- **Tập huấn luyện (Training Set):** 60.000 ảnh kích thước $28 \times 28$ mức xám (giá trị pixel $[0, 255]$).
-- **Tập kiểm thử (Test Set):** 10.000 ảnh phân bố cân bằng đồng đều giữa 10 lớp chữ số ($0 \to 9$).
-- **Phân chia tập kiểm định (Validation Split):** $50.000$ train + $10.000$ validation độc lập phục vụ tinh chỉnh siêu tham số và Early Stopping cho CNN.
+- **Tổng quy mô:** 70.000 ảnh xám kích thước $28 \times 28$ điểm ảnh (784 chiều).
+- **Tập huấn luyện (Training Set):** 50.000 ảnh (~71.4%) dùng để tối ưu trọng số mô hình.
+- **Tập kiểm chứng (Validation Set):** 10.000 ảnh (~14.3%) dùng để kiểm soát quá khớp và kích hoạt cơ chế dừng sớm (Early Stopping).
+- **Tập kiểm thử (Test Set):** 10.000 ảnh (~14.3%) độc lập hoàn toàn dùng để đo đạc chỉ số cuối cùng (Zero Data Leakage).
+
+<p align="center">
+  <img src="reports/figures/01_class_distribution.png" alt="Phân bố số lượng mẫu cân bằng giữa 10 lớp" width="520"/>
+  <img src="reports/figures/02_mean_variance_digits.png" alt="Bản đồ nhiệt trung bình và phương sai 10 chữ số" width="520"/>
+</p>
 
 ### 3.2. Chuẩn hóa quang học Center of Mass (NIST Alignment Pipeline)
 
 <p align="center">
-  <img src="reports/figures/04_deskew_comparison.png" alt="So sánh trước và sau khi căn chỉnh Deskew" width="720"/>
+  <img src="reports/figures/04_deskew_comparison.png" alt="So sánh trước và sau khi căn chỉnh Deskew" width="760"/>
 </p>
 
-Để bảo đảm nét vẽ tự do của người dùng trên Web canvas có phân bố thống kê trùng khớp với dữ liệu huấn luyện:
-1. **Trích xuất vùng nét chữ:** Tách khung chữ nhật tối thiểu bao quanh nét vẽ (`cv2.boundingRect`).
-2. **Co dãn đẳng tỷ lệ (Aspect Ratio Preserved):** Nén cạnh dài nhất về đúng $20\text{px}$ đặt vào khung trung tâm $20 \times 20$.
-3. **Căn trọng tâm quang học:** Tính moment không gian ($\mu_{10}, \mu_{01}$) và dịch chuyển affine đưa tâm khối lượng nét chữ về chính xác tọa độ $(14, 14)$ của khung chuẩn $28 \times 28$.
-4. **Chuẩn hóa giá trị:** Đưa cường độ điểm ảnh từ $[0, 255]$ về $[0.0, 1.0]$.
+Ảnh vẽ tự do từ canvas hoặc ảnh tải lên được chuẩn hóa tự động qua pipeline quang học 5 bước:
+1. **Trích xuất vùng nét chữ:** Cắt hộp chữ nhật bao quanh nét vẽ thông qua `cv2.boundingRect()`. Nếu canvas trống (< 15 pixel sáng), hệ thống lập tức thông báo "Bảng vẽ trống", không suy luận lãng phí tài nguyên.
+2. **Co dãn đẳng tỷ lệ (Aspect Ratio Preserved):** Nén cạnh dài nhất về đúng $20\text{px}$ đặt vừa vặn vào khung $20 \times 20$.
+3. **Căn trọng tâm quang học (Center of Mass):** Tính toán moment không gian $(\mu_{10}, \mu_{01})$ và tịnh tiến affine đưa tâm khối lượng nét chữ về chính xác tọa độ $(14.0, 14.0)$ của khung chuẩn $28 \times 28$ NIST.
+4. **Chuẩn hóa biên độ:** Đưa cường độ điểm ảnh từ $[0, 255]$ về dải số thực $[0.0, 1.0]$.
 
 ---
 
 ## 4. KHÔNG GIAN ĐẶC TRƯNG & CƠ SỞ TOÁN HỌC
 
-| Không gian đặc trưng | Kích thước | Cơ sở toán học & Mục đích |
+| Không gian đặc trưng | Kích thước | Cơ sở toán học & Vai trò kỹ thuật |
 |---|:---:|---|
-| **Raw Pixels** | 784D | Vector hóa trực tiếp ma trận điểm ảnh phẳng hóa $28 \times 28$ ($\mathbf{x} \in [0, 1]^{784}$). |
-| **PCA (Principal Component Analysis)** | 154D / 152D | Phân rã ma trận hiệp phương sai, giữ lại $\ge 95\%$ tổng phương sai dữ liệu, loại bỏ 632 chiều biên vô nghĩa. |
-| **Deskewing (Nắn thẳng độ nghiêng)** | 784D | Khử góc nghiêng nét viết cá nhân bằng ma trận biến đổi Affine dựa trên moment quán tính bậc 2 ($\alpha = -\mu_{11}/\mu_{02}$). |
-| **Deskewing + PCA** | **112D** | **Cấu hình tối ưu nhất nhóm cổ điển:** Vừa nắn thẳng hình học vừa nén phương sai, chỉ cần 112 chiều nhưng đạt 97.97% Accuracy. |
-| **HOG (Histogram of Oriented Gradients)** | 324D | Trích xuất phân bố hướng gradient biên nét bút (9 bins định hướng, khối $2\times 2$, ô $7\times 7$). |
-| **Binarized Pixels** | 784D | Nhị phân hóa điểm ảnh với ngưỡng $\theta = 0.2$ phục vụ phân phối xác suất Bernoulli Naive Bayes. |
-| **Learned Conv Features (CNN)** | Không gian sâu | Tự động học trích xuất đặc trưng cục bộ đến toàn cục qua 3 khối Conv2D + BatchNorm + Dropout + MaxPool. |
+| **Learned Conv (CNN)** | Không gian sâu | Mạng nơ-ron tự động trích xuất đặc trưng tích chập đa tầng từ cục bộ (biên, góc) đến toàn cục (cung tròn khép kín). Đạt đỉnh cao **99.42%**. |
+| **Deskewing + PCA** | **113D** | **Cấu hình tối ưu cho ML cổ điển:** Nắn thẳng góc nghiêng nét viết bằng moment bậc 2 ($\alpha = \mu_{11}/\mu_{02}$) kết hợp PCA giữ $\ge 95\%$ phương sai (113 chiều), đưa SVM đạt **98.79%** và k-NN đạt **98.06%**. |
+| **Raw Pixels** | 784D | Vector hóa trực tiếp ma trận điểm ảnh phẳng hóa $28 \times 28$ ($\mathbf{x} \in [0.0, 1.0]^{784}$). Random Forest 150 cây đạt **96.99%**. |
+| **Binarized Pixels** | 784D | Nhị phân hóa điểm ảnh với ngưỡng $\theta = 0.2$ phục vụ phân phối xác suất Bernoulli Naive Bayes. Đạt tốc độ suy luận nhanh nhất (**1.66 ms**). |
 
 <p align="center">
-  <img src="reports/figures/06_pca_2d_projection.png" alt="Không gian 2D PCA" width="440"/>
-  <img src="reports/figures/07_tsne_clustering.png" alt="Gom cụm phi tuyến t-SNE" width="440"/>
+  <img src="reports/figures/05_pca_variance_curve.png" alt="Đường cong phương sai tích lũy PCA" width="520"/>
+  <img src="reports/figures/07_tsne_clustering.png" alt="Gom cụm phi tuyến t-SNE" width="520"/>
 </p>
 
 ---
 
-## 5. BẢNG ĐỐI CHUẨN THỰC NGHIỆM TOÀN DIỆN (BENCHMARK)
+## 5. PHÂN TÍCH CHUYÊN SÂU & MA TRẬN NHẦM LẪN
 
-Tất cả kết quả đều được kiểm chứng độc lập trên **10.000 ảnh MNIST Test Set** từ các checkpoint đã huấn luyện và lưu trữ trong `saved_models/`:
-
-### 5.1. Bảng 1: Quy mô toàn phần (Full Dataset — 60.000 mẫu Train)
-
-| Xếp hạng | Thuật toán / Mô hình | Không gian Đặc trưng | Số chiều | Số mẫu Train | **Test Accuracy** | Macro F1 | Số lỗi / 10k | Độ trễ đơn lẻ (P50) | Kích thước Checkpoint |
-|:---:|:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 🥇 **#1** | **Modern CNN (Baseline 60k)** | **Learned Conv (28×28)** | 784 | 60.000 | **99.19%** | **99.18%** | **81** | **0.405 ms** | 0.62 MB |
-| 🥈 **#2** | **Modern CNN (Val Tuned EarlyStop)** | **Learned Conv (28×28)** | 784 | 50.000 | **99.00%** | **99.00%** | **100** | 0.405 ms | 0.62 MB |
-| 🥉 **#3** | **SVM (RBF Kernel, C=5.0)** | **PCA (95% Var)** | 154 | 60.000 | **98.54%** | **98.53%** | **146** | 0.852 ms | 8.44 MB |
-| **#4** | **$k$-NN ($k=3$, Distance)** | **PCA (95% Var)** | 154 | 60.000 | **97.31%** | **97.29%** | **269** | 0.075 ms | 32.95 MB |
-| **#5** | **Linear SVM** | Raw Pixels (784D) | 784 | 60.000 | **91.84%** | **91.73%** | 816 | 0.008 ms | 0.05 MB |
-| **#6** | **Bernoulli Naive Bayes** | Binarized Pixels | 784 | 60.000 | **84.46%** | **84.28%** | 1.554 | 0.012 ms | 0.03 MB |
-| **#7** | **Gaussian Naive Bayes** | Raw Pixels (784D) | 784 | 60.000 | **55.58%** | **51.20%** | 4.442 | 0.035 ms | 0.04 MB |
-
----
-
-### 5.2. Bảng 2: Tập con kiểm chuẩn đối chứng (Controlled Subset — Cùng 10.000 mẫu Train cố định)
-
-> *Ghi chú: Toàn bộ mô hình trong bảng này được huấn luyện trên cùng một tập con 10.000 mẫu phân tầng (`random_state=42`) và đánh giá trên 10.000 ảnh test độc lập để so sánh trực diện tác động của từng loại đặc trưng.*
-
-| Xếp hạng | Phân nhóm | Thuật toán / Mô hình | Không gian Đặc trưng | Số chiều | **Test Accuracy** | Macro F1 | Số lỗi / 10k | Độ trễ đơn lẻ | Ghi chú khoa học |
-|:---:|:---|:---|:---|:---:|:---:|:---:|:---:|:---:|:---|
-| 🏆 **#1** | **Nhóm A: Đặc trưng** | **SVM (RBF Kernel)** | **Deskewed + PCA** | **112** | **97.97%** | **97.96%** | **203** | 0.526 ms | **Top 1 Classical ML**: Nắn thẳng nét chữ + PCA |
-| **#2** | Nhóm A: Đặc trưng | **SVM (RBF Kernel)** | Deskewed Pixels | 784 | **97.77%** | 97.75% | 223 | 0.679 ms | Triệt tiêu độ nghiêng tăng +0.91% so với Raw |
-| **#3** | Nhóm C: Deep Learning | **Modern CNN (sub10k)** | Learned Conv (28×28) | 784 | **97.60%** | 97.60% | 240 | 0.405 ms | CNN huấn luyện chỉ với 10.000 mẫu |
-| **#4** | Nhóm A: Đặc trưng | **SVM (RBF Kernel)** | HOG Features | 324 | **97.58%** | 97.57% | 242 | 0.614 ms | Đặc trưng hướng gradient biên cạnh cục bộ |
-| **#5** | Nhóm A: Đặc trưng | **SVM (RBF Kernel)** | PCA (95% Var) | 152 | **97.22%** | 97.20% | 278 | 0.270 ms | Nén chiều $5.1\times$, tăng tốc suy luận |
-| **#6** | Nhóm A: Đặc trưng | **SVM (RBF Kernel)** | Raw Pixels | 784 | **96.86%** | 96.83% | 314 | 1.132 ms | Điểm ảnh thô không xử lý hình thái |
-| **#7** | Nhóm B: Thuật toán | **$k$-NN ($k=3$, Distance)** | PCA (95% Var) | 152 | **95.44%** | 95.41% | 456 | 0.057 ms | PCA cải thiện khoảng cách Euclidean |
-| **#8** | Nhóm B: Thuật toán | **Random Forest (150 cây)** | Raw Pixels | 784 | **95.28%** | 95.23% | 472 | 0.008 ms | Cấu hình tối ưu qua tập Validation |
-| **#9** | Nhóm B: Thuật toán | **$k$-NN ($k=3$, Distance)** | Raw Pixels | 784 | **95.17%** | 95.14% | 483 | 0.231 ms | Suy giảm nhẹ do bùng nổ số chiều (Curse of Dimensionality) |
-| **#10** | Nhóm B: Thuật toán | **Linear SVM ($C=0.01$)** | Raw Pixels | 784 | **90.79%** | 90.64% | 921 | 0.147 ms | Siêu tham số tối ưu qua Validation ($C=0.01$) |
-| **#11** | Nhóm B: Thuật toán | **Bernoulli Naive Bayes** | Binarized Pixels | 784 | **84.40%** | 84.20% | 1.560 | 0.010 ms | Mô hình xác suất nhị phân Bernoulli |
-| **#12** | Nhóm B: Thuật toán | **Gaussian Naive Bayes** | Raw Pixels | 784 | **55.80%** | 51.50% | 4.420 | 0.040 ms | Giả định độc lập có điều kiện bị vi phạm nghiêm trọng |
-
----
-
-## 6. PHÂN TÍCH & GIẢI THÍCH KHOA HỌC
+### 5.1. Quá trình huấn luyện Modern CNN với Early Stopping
+Mạng Modern CNN gồm 3 khối Convolutional (32, 64, 128 channels) chuẩn hóa bởi BatchNorm và Dropout, tổng cộng **160.074 tham số**. Mô hình tối ưu hóa bằng Adam, tự động giảm learning rate và dừng sớm tối ưu tại **Epoch 17** với Validation Loss cực tiểu **`0.0249`** (Validation Accuracy **`99.32%`**):
 
 <p align="center">
-  <img src="reports/figures/cm_modern_cnn_full_60k.png" alt="Confusion Matrix Modern CNN" width="440"/>
-  <img src="reports/figures/cm_svm_rbf_deskew_pca.png" alt="Confusion Matrix SVM Deskew PCA" width="440"/>
+  <img src="reports/figures/08_cnn_training_history.png" alt="Lịch sử huấn luyện Modern CNN qua 17 Epoch" width="850"/>
 </p>
 
-### 6.1. Về Không Gian Đặc Trưng (Nhóm A)
-1. **Deskewing (Nắn thẳng góc nghiêng nét viết):** Giúp triệt tiêu độ nghiêng tự nhiên do tay thuận của người viết, đưa chữ số về tư thế thẳng đứng chuẩn hóa. Khi kết hợp với SVM RBF, độ chính xác tăng từ $96.86\%$ lên $97.77\%$ (+0.91%), giảm 91 ca dự đoán sai.
-2. **PCA (Phân tích thành phần chính):** Giảm số chiều từ 784 xuống 112 chiều (giảm gần 7 lần dung lượng) nhưng không làm mất mát độ chính xác, đồng thời tăng tốc độ huấn luyện gấp 5 lần và loại bỏ nhiễu biên.
-3. **Deskewing + PCA (112 chiều):** Đạt kết quả xuất sắc nhất nhóm học máy cổ điển (**97.97%**), chứng minh việc kết hợp tiền xử lý hình học và nén không gian toán học có tính cộng hưởng cực lớn.
+### 5.2. Ma trận nhầm lẫn (Confusion Matrix)
+So sánh ma trận nhầm lẫn trên 10.000 ảnh test độc lập giữa mô hình quán quân **Modern CNN (99.42%)** và á quân **SVM RBF Deskew+PCA (98.79%)**:
 
-### 6.2. Về Thuật Toán Phân Lớp (Nhóm B)
-1. **SVM RBF phi tuyến áp đảo Linear SVM:** Độ chính xác đạt $97.97\%$ so với $90.79\%$, chứng minh ranh giới quyết định giữa các lớp chữ số trong không gian ảnh có tính phi tuyến mạnh mẽ.
-2. **Hạn chế của Naive Bayes:** Gaussian NB chỉ đạt $55.80\%$ do giả định các điểm ảnh lân cận độc lập có điều kiện là hoàn toàn phi thực tế trong xử lý ảnh (các điểm ảnh cạnh nhau luôn có tương quan không gian cao).
+<p align="center">
+  <img src="reports/figures/cm_modern_cnn.png" alt="Confusion Matrix Modern CNN" width="460"/>
+  <img src="reports/figures/cm_svm.png" alt="Confusion Matrix SVM Deskew PCA" width="460"/>
+</p>
 
-### 6.3. Về Sức Mạnh của Mạng Nơ-ron Tích Chập (Nhóm C - Deep Learning)
-- Kiến trúc **Modern CNN** gồm 3 tầng tích chập ($3\times 3$), chuẩn hóa mẻ (*Batch Normalization*), kích hoạt ReLU, Dropout ($0.25 - 0.5$) và Fully Connected.
-- Nhờ khả năng tự học các bộ lọc trích xuất đặc trưng có tính bất biến tịnh tiến (*Translation Invariance*), Modern CNN đạt **99.19% Accuracy** trên 60k train (chỉ mắc 81 lỗi trên toàn bộ 10.000 ảnh test), vượt trội hơn mọi giải thuật cổ điển.
+### 5.3. Phân tích trực quan 58 mẫu dự đoán sai của Modern CNN
+Trên toàn bộ 10.000 ảnh kiểm thử, mô hình chỉ mắc đúng **58 lỗi** (tỷ lệ lỗi cực thấp $0.58\%$). Danh sách chi tiết được xuất tại `reports/tables/cnn_error_samples.csv` và trực quan hóa toàn bộ tại `reports/figures/08_cnn_error_samples.png`:
+
+<p align="center">
+  <img src="reports/figures/08_cnn_error_samples.png" alt="Trực quan hóa toàn bộ 58 mẫu dự đoán sai của Modern CNN" width="920"/>
+</p>
 
 ---
 
-## 7. ỨNG DỤNG WEB STUDIO TƯƠNG TÁC
+## 6. ỨNG DỤNG WEB STUDIO TƯƠNG TÁC THỜI GIAN THỰC
 
-Hệ thống được trang bị giao diện web hiện đại theo ngôn ngữ **Premium Soft Glass + Editorial Minimalism**:
-
-<p align="center">
-  <img src="reports/evidence/web/sample_0_prediction.png" alt="Dự đoán mẫu số 0" width="440"/>
-  <img src="reports/evidence/web/04_web_model_switch_prediction.png" alt="Chuyển đổi mô hình linh hoạt" width="440"/>
-</p>
+Hệ thống được trang bị giao diện web hiện đại theo ngôn ngữ thiết kế **Soft Glassmorphism + Editorial Minimalism**:
 
 ### Các tính năng nổi bật:
-- 🎨 **Studio Drawing Canvas:** Bảng vẽ đen nhung với vạch căn góc cơ học (`corner-mark`), hỗ trợ mượt mà cả chuột và màn hình cảm ứng điện thoại/tablet.
-- 🖌️ **Stroke Presets:** 3 nấc nét bút thông minh (Mảnh 14, Chuẩn 20, Đậm 28) đồng bộ mượt mà với thanh trượt nét vẽ.
-- 🧠 **Model Registry Linh Hoạt:** Cho phép người dùng chuyển đổi tức thì giữa 12 mô hình (CNN 60k, CNN Val-Tuned, SVM Deskew+PCA, k-NN, Random Forest, Naive Bayes...).
-- ⏱️ **Real-time Latency & Confidence:** Hiển thị độ trễ suy luận tính bằng mili-giây (`latency_ms`), ảnh tiền xử lý $28 \times 28$ chuẩn NIST và biểu đồ phân bố xác suất trên cả 10 lớp.
-- 🎯 **Test Samples Palette:** Nạp trực tiếp các mẫu ảnh kiểm thử thực nghiệm từ MNIST Test Set để đối chứng kết quả ngay lập tức.
+- 🎨 **Studio Drawing Canvas:** Bảng vẽ kỹ thuật số với vạch căn góc cơ học (`corner-mark`), hỗ trợ cảm ứng áp lực và nét vẽ mượt mà trên cả PC, Tablet và Smartphone.
+- 🖌️ **Stroke Presets:** 3 nấc độ dày nét bút linh hoạt (Mảnh 14, Chuẩn 20, Đậm 28) đồng bộ theo thời gian thực.
+- 🧠 **Model Selector Tinh Gọn:** Chuyển đổi tức thì giữa 5 mô hình chuẩn (*Modern CNN, SVM, k-NN, Random Forest, Bernoulli Naive Bayes*). Tên hiển thị chuẩn xác, không chứa hậu tố rườm rà.
+- ⏱️ **Real-time Metrics:** Hiển thị độ trễ suy luận mili-giây, ảnh tiền xử lý $28 \times 28$ chuẩn NIST và phân bố xác suất thanh ngang trực quan trên 10 lớp chữ số ($0 \to 9$).
+- 🎯 **MNIST Test Samples Palette:** Nạp trực tiếp 10 mẫu ảnh kiểm thử chuẩn NIST để kiểm chứng tức thì khả năng nhận dạng.
+- 🏛️ **Footer Chuẩn Mực:** Chân trang tinh gọn hiển thị duy nhất thông tin: **Phân hiệu Đại học Thủy Lợi**.
 
 ---
 
-## 8. CẤU TRÚC THƯ MỤC DỰ ÁN
+## 7. CẤU TRÚC THƯ MỤC DỰ ÁN CHUẨN HÓA
+
+Toàn bộ dự án đã được tinh giản, phân chia khoa học và loại bỏ triệt để các file rác trung gian:
 
 ```text
-ChuSoVietTay/
-├── app/                                 # Ứng dụng Web Studio tương tác
-│   ├── server.py                        # FastAPI Server & Model Registry (12 mô hình)
-│   └── static/                          # Frontend Assets (HTML5, Vanilla CSS, JS)
+handwritten-digit-recognition/
+├── app/                                 # Ứng dụng Web Studio tương tác thời gian thực
+│   ├── server.py                        # FastAPI Backend & Model Registry (5 mô hình chính thức)
+│   └── static/                          # Frontend Assets (HTML5, Vanilla CSS, Modern JavaScript)
 │       ├── index.html                   # Giao diện Soft Glass Studio
 │       ├── style.css                    # Design Tokens & Motion System
 │       └── app.js                       # Logic tương tác Canvas & API Fetch
-├── data/                                # Thư mục dữ liệu MNIST
+├── data/                                # Thư mục dữ liệu chuẩn MNIST
 │   ├── mnist.npz                        # Gói dữ liệu nén NumPy chuẩn nạp tốc độ cao
-│   ├── mnist_samples.png                # Ảnh trực quan các mẫu số 0-9
-│   └── raw/                             # Tệp nhị phân thô IDX gốc (loại trừ trên Git)
-├── notebooks/                           # Jupyter Notebooks thực nghiệm
-│   ├── 01_eda_and_data_analysis.ipynb   # Khám phá dữ liệu, phân bố pixel, PCA & t-SNE
-│   └── 02_models_and_benchmark.ipynb    # Huấn luyện mô hình & đối chuẩn chi tiết
-├── reports/                             # Hồ sơ học thuật hoàn chỉnh nộp hội đồng
-│   ├── Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.docx # Báo cáo khoa học Word (28 trang)
-│   ├── Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.pdf  # Báo cáo in ấn định dạng PDF
-│   ├── Slide_Thuyet_Trinh_Nhom_03.pptx  # Slide thuyết trình bảo vệ PowerPoint
-│   ├── BAO_CAO_KHOA_HOC_NHAN_DANG_CHU_SO_MNIST.md     # Bản thảo báo cáo dạng Markdown
-│   ├── SLIDE_THUYET_TRINH_DE_TAI_1.md   # Đề cương nội dung slide
-│   ├── BANG_PHAN_CONG_CONG_VIEC.md      # Bảng phân công nhiệm vụ thành viên
-│   ├── figures/                         # Toàn bộ biểu đồ EDA, t-SNE, Confusion Matrix
-│   ├── tables/                          # Bảng kết quả thực nghiệm JSON / Markdown
+│   └── mnist_samples.png                # Ảnh trực quan các mẫu số 0-9
+├── mnist_best_models/                   # Thư mục xuất checkpoint trực tiếp từ Notebook 02
+├── notebooks/                           # Jupyter Notebooks thực nghiệm chuẩn
+│   ├── 01_EDA_Truc_Quan_MNIST.ipynb     # Khám phá trực quan dữ liệu, phân bố pixel, PCA & t-SNE
+│   └── 02_Tien_Xu_Ly_Train_MNIST (3).ipynb # Tiền xử lý Deskewing, PCA 113D & Huấn luyện 5 mô hình
+├── reports/                             # Hồ sơ học thuật hoàn chỉnh nộp hội đồng chấm thi
+│   ├── Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.docx # Báo cáo Word chuẩn luận văn (2.3 MB)
+│   ├── Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.pdf  # Báo cáo in ấn định dạng PDF (15 trang)
+│   ├── Slide_Thuyet_Trinh_Nhom_03.pptx  # Slide thuyết trình PowerPoint Widescreen 16:9 (12 slides)
+│   ├── BAO_CAO_KHOA_HOC_NHAN_DANG_CHU_SO_MNIST.md     # Bản thảo báo cáo khoa học Markdown
+│   ├── SLIDE_THUYET_TRINH_DE_TAI_1.md   # Đề cương nội dung slide thuyết trình
+│   ├── BANG_PHAN_CONG_CONG_VIEC.md      # Bảng phân công nhiệm vụ thành viên (50% - 50%)
+│   ├── figures/                         # Toàn bộ biểu đồ EDA, Loss/Accuracy, Ma trận nhầm lẫn
+│   ├── tables/                          # Bảng kết quả thực nghiệm JSON, CSV và Markdown
 │   └── evidence/web/                    # Bằng chứng kiểm thử visual web app
-├── results/                             # Dữ liệu đối chuẩn & kiểm chứng thực nghiệm
-│   ├── verified_experiments.json        # Cơ sở dữ liệu 12 cấu hình đối chuẩn
-│   ├── latency_benchmark_detailed.json  # Số đo độ trễ suy luận chi tiết (P50, P95, mean)
-│   ├── hyperparameter_search_results.json # Bằng chứng chọn siêu tham số validation
-│   └── cnn_validation_history.json      # Lịch sử đào tạo từng epoch của CNN
-├── saved_models/                        # Checkpoints các mô hình đã huấn luyện (.pt, .joblib)
-├── src/                                 # Thư viện mã nguồn Python cốt lõi
+├── results/                             # Dữ liệu đối chuẩn & nhật ký kiểm thử
+├── saved_models/                        # 5 mô hình chính thức phục vụ Web App (CNN, SVM, k-NN, RF, NB)
+│   ├── CNN.pt                           # Checkpoint PyTorch Modern CNN (99.42%)
+│   ├── SVM.joblib                       # Checkpoint SVM RBF Deskew+PCA (98.79%)
+│   ├── k-NN.joblib                      # Checkpoint k-NN Deskew+PCA (98.06%)
+│   ├── Random_Forest.joblib             # Checkpoint Random Forest 150 cây (96.99%)
+│   ├── Naive_Bayes.joblib               # Checkpoint Bernoulli Naive Bayes (84.46%)
+│   ├── pca.joblib                       # Bộ biến đổi PCA 113 chiều fitted trên 50k ảnh nắn thẳng
+│   └── results.csv                      # Kết quả đối chuẩn chi tiết đã xác thực
+├── src/                                 # Thư viện mã nguồn Python chuẩn phiên bản hiện tại
 │   ├── config.py                        # Cấu hình đường dẫn và hằng số hệ thống
 │   ├── data_loader.py                   # Nạp dữ liệu & kiểm tra tính toàn vẹn
-│   ├── eda.py                           # Kịch bản sinh biểu đồ phân tích dữ liệu EDA
 │   ├── features.py                      # Pipeline Deskewing, PCA, HOG, chuẩn hóa
-│   ├── models.py                        # Định nghĩa ModernCNN & Model Wrappers
-│   ├── evaluate.py                      # Đánh giá Accuracy, F1, Confusion Matrix, Latency
-│   ├── train_and_benchmark.py           # Huấn luyện toàn bộ mô hình & xuất đối chuẩn
-│   ├── train_cnn_with_validation.py     # Huấn luyện CNN với Early Stopping trên Validation
-│   ├── tune_hyperparameters.py          # Lựa chọn siêu tham số công bằng trên Validation
-│   ├── benchmark_latency.py             # Đo đạc độ trễ suy luận tuần tự & thông lượng lô
-│   └── export_report_docx.py            # Kịch bản tự động xuất file báo cáo Word đẹp mắt
+│   ├── models.py                        # Định nghĩa kiến trúc ModernCNN & Factory
+│   └── __init__.py                      # Package initialization
+├── archive_legacy/                      # Thư mục lưu trữ & khóa toàn bộ tài nguyên phiên bản cũ
+│   ├── models/                          # 27 mô hình thử nghiệm cũ được khóa lưu trữ
+│   ├── notebooks/                       # 2 notebook phiên bản cũ
+│   ├── scripts/                         # Các script thử nghiệm giai đoạn trước
+│   └── README.md                        # Ghi chú giải thích thư mục khóa lưu trữ
 ├── tests/                               # Bộ kiểm thử tự động toàn diện
 │   └── test_pipeline.py                 # 28 bài test unit, integration & regression
 ├── requirements.txt                     # Danh mục thư viện phụ thuộc
 ├── run_app.py                           # Kịch bản khởi động Web Server trực tiếp
+├── train_notebook_models.py             # Script tái hiện toàn bộ quy trình huấn luyện từ Notebook 02
 └── README.md                            # Báo cáo học thuật tổng quan dự án
 ```
 
 ---
 
-## 9. HƯỚNG DẪN CÀI ĐẶT & KHỞI CHẠY
+## 8. HƯỚNG DẪN CÀI ĐẶT & KHỞI CHẠY
 
-### 9.1. Cài đặt môi trường
+### 8.1. Cài đặt môi trường
 
-Yêu cầu hệ thống: **Python 3.10 trở lên** (hỗ trợ Windows, macOS, Linux).
+Hệ thống tương thích hoàn hảo với **Python 3.10, 3.11, 3.12, 3.14**:
 
 ```bash
 # 1. Clone kho lưu trữ GitHub
@@ -267,65 +232,53 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 9.2. Khởi chạy Web Studio tương tác
+### 8.2. Khởi chạy Web Studio tương tác
 
 Chạy một lệnh duy nhất:
 ```bash
 python run_app.py
 ```
-Sau đó truy cập trình duyệt tại địa chỉ: **`http://127.0.0.1:8000`**
+Sau đó mở trình duyệt truy cập tại địa chỉ: **`http://127.0.0.1:8000`**
 
-### 9.3. Chạy bộ kiểm thử tự động (Automated Test Suite)
+### 8.3. Chạy bộ kiểm thử tự động (Automated Test Suite)
 
-Dự án trang bị 28 bài kiểm thử tự động bao quát toàn bộ pipeline:
+Dự án trang bị **28 bài kiểm thử tự động** bao quát toàn bộ pipeline:
 ```bash
 python -m unittest tests/test_pipeline.py
 ```
-*Kết quả:* `Ran 28 tests in ~2.1s — OK (100% PASS)`.
+Kết quả kiểm tra: **28 / 28 Tests Passed (100% OK)**.
 
-### 9.4. Tái hiện lại toàn bộ thực nghiệm (Reproducibility)
+### 8.4. Huấn luyện lại mô hình (Reproducibility)
 
+Để tái hiện lại 100% kết quả huấn luyện của 5 mô hình theo đúng Notebook 02:
 ```bash
-# 1. Phân tích khám phá dữ liệu (EDA) và sinh biểu đồ:
-python -m src.eda
-
-# 2. Dò tìm siêu tham số tối ưu trên tập Validation:
-python -m src.tune_hyperparameters
-
-# 3. Huấn luyện lại Modern CNN với Early Stopping:
-python -m src.train_cnn_with_validation
-
-# 4. Đo đạc độ trễ suy luận chi tiết:
-python -m src.benchmark_latency
-
-# 5. Huấn luyện và cập nhật toàn bộ bảng đối chuẩn:
-python -m src.train_and_benchmark
+python train_notebook_models.py
 ```
+Toàn bộ mô hình, bộ biến đổi PCA 113D, lịch sử huấn luyện và các file dự đoán sẽ được tự động xuất vào `mnist_best_models/` và đồng bộ sang `saved_models/`.
 
 ---
 
-## 10. HỒ SƠ BÁO CÁO KHOA HỌC & SLIDE THUYẾT TRÌNH
+## 9. HỒ SƠ BÁO CÁO KHOA HỌC & SLIDE THUYẾT TRÌNH
 
-Toàn bộ tài liệu báo cáo của **Nhóm 03** đã được hoàn thiện chỉn chu và đồng bộ số liệu 100%:
+Toàn bộ hồ sơ báo cáo nghiệm thu đã được chuẩn hóa đồng bộ 100% với phiên bản mới nhất:
 
-1. 📄 **Báo cáo nghiên cứu khoa học hoàn chỉnh (6 Chương, 28 trang):**
-   - Định dạng Word: [reports/Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.docx](reports/Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.docx)
-   - Định dạng PDF: [reports/Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.pdf](reports/Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.pdf)
-   - Bản thảo Markdown: [reports/BAO_CAO_KHOA_HOC_NHAN_DANG_CHU_SO_MNIST.md](reports/BAO_CAO_KHOA_HOC_NHAN_DANG_CHU_SO_MNIST.md)
-2. 📊 **Slide thuyết trình bảo vệ trước hội đồng chấm thi:**
-   - Định dạng PowerPoint: [reports/Slide_Thuyet_Trinh_Nhom_03.pptx](reports/Slide_Thuyet_Trinh_Nhom_03.pptx)
-   - Đề cương chi tiết: [reports/SLIDE_THUYET_TRINH_DE_TAI_1.md](reports/SLIDE_THUYET_TRINH_DE_TAI_1.md)
-3. 👥 **Bảng phân công nhiệm vụ và đóng góp thành viên:** [reports/BANG_PHAN_CONG_CONG_VIEC.md](reports/BANG_PHAN_CONG_CONG_VIEC.md)
-4. 📋 **Danh mục kiểm tra chất lượng nghiệm thu:** [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md)
+1. 📄 **Báo cáo nghiên cứu khoa học hoàn chỉnh (7 chương, 15 trang in ấn):**
+   - Định dạng Word: [`reports/Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.docx`](reports/Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.docx) *(2.3 MB, đầy đủ hình ảnh, bảng biểu, mục lục)*
+   - Định dạng PDF: [`reports/Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.pdf`](reports/Bao_Cao_Bai_Tap_Lon_Nhan_Dang_Mau_Nhom_03.pdf) *(1.2 MB, sẵn sàng in ấn nộp hội đồng)*
+   - Bản thảo Markdown: [`reports/BAO_CAO_KHOA_HOC_NHAN_DANG_CHU_SO_MNIST.md`](reports/BAO_CAO_KHOA_HOC_NHAN_DANG_CHU_SO_MNIST.md)
+2. 📊 **Bộ Slide thuyết trình bảo vệ trước hội đồng chấm thi:**
+   - Định dạng PowerPoint: [`reports/Slide_Thuyet_Trinh_Nhom_03.pptx`](reports/Slide_Thuyet_Trinh_Nhom_03.pptx) *(12 slide Widescreen 16:9, tông màu Navy & Blue chuyên nghiệp)*
+   - Đề cương chi tiết: [`reports/SLIDE_THUYET_TRINH_DE_TAI_1.md`](reports/SLIDE_THUYET_TRINH_DE_TAI_1.md)
+3. 👥 **Bảng phân công nhiệm vụ và đóng góp thành viên:** [`reports/BANG_PHAN_CONG_CONG_VIEC.md`](reports/BANG_PHAN_CONG_CONG_VIEC.md) *(Đoàn Anh Vũ: 50.0% — Nguyễn Hồng Nguyên: 50.0%)*
 
 ---
 
-## 11. ĐỘI NGŨ THỰC HIỆN & BẢN QUYỀN
+## 10. ĐỘI NGŨ THỰC HIỆN & BẢN QUYỀN
 
-- **Đơn vị đào tạo:** Trường Đại học Thủy Lợi (TLU) — Khoa Công nghệ Thông tin — Bộ môn Khoa học Máy tính.
-- **Học phần:** Nhận dạng mẫu (*Pattern Recognition*) — Đề tài 1: Nhận dạng chữ số viết tay trên MNIST.
+- **Đơn vị đào tạo:** Phân hiệu Trường Đại học Thủy Lợi — Khoa Công nghệ Thông tin — Bộ môn Khoa học Máy tính.
+- **Học phần:** Nhận dạng mẫu (*Pattern Recognition*) — Đề tài 1: Nhận dạng chữ số viết tay trên bộ dữ liệu MNIST.
 - **Nhóm thực hiện:** **Nhóm 03** (Lớp: `S26-65TTNT`):
-  - **Đoàn Anh Vũ** — MSV: `2351267280`
-  - **Nguyễn Hồng Nguyên** — MSV: `2351267273`
+  - **Đoàn Anh Vũ** — MSV: `2351267280` *(Nhóm trưởng)*
+  - **Nguyễn Hồng Nguyên** — MSV: `2351267273` *(Thành viên)*
 - **Chủ sở hữu kho lưu trữ:** [@zudoan](https://github.com/zudoan) ([https://github.com/zudoan/handwritten-digit-recognition](https://github.com/zudoan/handwritten-digit-recognition)).
-- **Giấy phép:** Phục vụ mục đích học thuật, nghiên cứu và giáo dục.
+- **Giấy phép:** Phục vụ mục đích học thuật, nghiên cứu khoa học và giáo dục.

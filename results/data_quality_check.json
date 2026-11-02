@@ -1,0 +1,42 @@
+{
+  "x_test": {
+    "shape": [
+      10000,
+      28,
+      28
+    ],
+    "dtype": "uint8",
+    "min": 0,
+    "max": 255,
+    "nan_count": 0
+  },
+  "x_train": {
+    "shape": [
+      60000,
+      28,
+      28
+    ],
+    "dtype": "uint8",
+    "min": 0,
+    "max": 255,
+    "nan_count": 0
+  },
+  "y_train": {
+    "shape": [
+      60000
+    ],
+    "dtype": "uint8",
+    "min": 0,
+    "max": 9,
+    "nan_count": 0
+  },
+  "y_test": {
+    "shape": [
+      10000
+    ],
+    "dtype": "uint8",
+    "min": 0,
+    "max": 9,
+    "nan_count": 0
+  }
+}

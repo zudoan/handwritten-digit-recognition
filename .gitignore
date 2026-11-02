@@ -17,6 +17,14 @@ data/raw/
 # Bỏ ghi chú dòng dưới nếu không muốn đưa cả tệp mnist.npz lên Git:
 # data/mnist.npz
 
+# Archives and build artifacts
+*.zip
+*.tar.gz
+*.log
+
+# Notebook training output cache (official models are served from saved_models/)
+mnist_best_models/
+
 # VS Code / IDE
 .vscode/
 .idea/

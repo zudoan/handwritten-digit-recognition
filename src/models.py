@@ -94,56 +94,41 @@ def create_model(model_type: str, **kwargs) -> Any:
 
 
 if TORCH_AVAILABLE:
+    def create_cnn_sequential(num_classes: int = 10) -> nn.Sequential:
+        """Create exact Sequential CNN matching notebook 02."""
+        return nn.Sequential(
+            nn.Conv2d(1, 32, 3, padding=1), nn.BatchNorm2d(32), nn.ReLU(), nn.MaxPool2d(2),
+            nn.Conv2d(32, 64, 3, padding=1), nn.BatchNorm2d(64), nn.ReLU(), nn.MaxPool2d(2),
+            nn.Conv2d(64, 128, 3), nn.BatchNorm2d(128), nn.ReLU(), nn.MaxPool2d(2), nn.Flatten(),
+            nn.Dropout(0.4), nn.Linear(512, 128), nn.ReLU(), nn.Dropout(0.2), nn.Linear(128, num_classes),
+        )
+
     class ModernCNN(nn.Module):
         """
         Modern Convolutional Neural Network for MNIST digit classification.
-        Architecture:
-            Input: (N, 1, 28, 28)
-            Conv Block 1: Conv2D(1 -> 32, 3x3) -> BatchNorm -> ReLU -> MaxPool(2x2)
-            Conv Block 2: Conv2D(32 -> 64, 3x3) -> BatchNorm -> ReLU -> MaxPool(2x2)
-            Conv Block 3: Conv2D(64 -> 128, 3x3) -> BatchNorm -> ReLU
-            Flatten -> Dropout(0.4) -> Linear(128*3*3 -> 128) -> ReLU -> Dropout(0.2) -> Linear(128 -> 10)
+        Matches the exact architecture from 02_Tien_Xu_Ly_Train_MNIST.
         """
 
         def __init__(self, num_classes: int = 10):
             super().__init__()
-            self.features = nn.Sequential(
-                # Block 1: 28x28 -> 26x26 -> 13x13
-                nn.Conv2d(1, 32, kernel_size=3, padding=1),
-                nn.BatchNorm2d(32),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(2, 2),  # 14x14
-
-                # Block 2: 14x14 -> 7x7
-                nn.Conv2d(32, 64, kernel_size=3, padding=1),
-                nn.BatchNorm2d(64),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(2, 2),  # 7x7
-
-                # Block 3: 7x7 -> 3x3
-                nn.Conv2d(64, 128, kernel_size=3, padding=0),  # 5x5
-                nn.BatchNorm2d(128),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(2, 2),  # 2x2
-            )
-
-            self.classifier = nn.Sequential(
-                nn.Dropout(0.4),
-                nn.Linear(128 * 2 * 2, 128),
-                nn.ReLU(inplace=True),
-                nn.Dropout(0.2),
-                nn.Linear(128, num_classes),
-            )
+            self.net = create_cnn_sequential(num_classes)
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
             if x.ndim == 3:
                 x = x.unsqueeze(1)
             elif x.ndim == 2:
                 x = x.view(-1, 1, 28, 28)
-            feat = self.features(x)
-            flat = feat.view(feat.size(0), -1)
-            out = self.classifier(flat)
-            return out
+            return self.net(x)
+
+        def load_state_dict(self, state_dict, strict=True):
+            """Support loading direct sequential state_dict or nested net state_dict."""
+            first_key = next(iter(state_dict.keys()), "")
+            if first_key.startswith("net."):
+                return super().load_state_dict(state_dict, strict=strict)
+            elif first_key.split(".")[0].isdigit():
+                return self.net.load_state_dict(state_dict, strict=strict)
+            else:
+                return super().load_state_dict(state_dict, strict=False)
 
         def predict_proba(self, x_np: np.ndarray, batch_size: int = 256) -> np.ndarray:
             """Predict probability distribution for numpy array."""

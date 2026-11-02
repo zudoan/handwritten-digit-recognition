@@ -1,0 +1,27 @@
+{
+  "seed": 42,
+  "train": 50000,
+  "validation": 10000,
+  "test": 10000,
+  "parameters": {
+    "Naive Bayes": "BernoulliNB, alpha=1.0, binarize=0.2",
+    "k-NN": "k=3, weights=distance, Deskew + PCA 95%",
+    "SVM": "kernel=rbf, C=5, gamma=scale, Deskew + PCA 95%",
+    "Random Forest": "n_estimators=150, max_features=sqrt, max_depth=None, random_state=42",
+    "CNN": "Adam, LR đầu=0.001, weight_decay=0.0001, batch=64, checkpoint epoch 17"
+  },
+  "cnn_best_epoch": 17,
+  "cnn_best_val_loss": 0.0249099703699223,
+  "cnn_initial_epoch_limit": 70,
+  "cnn_final_epoch_limit": 70,
+  "cnn_extend_epochs": 20,
+  "cnn_epochs_run": 17,
+  "cnn_stop_reason": "early_stopping",
+  "cnn_early_stopping_patience": 3,
+  "cnn_min_delta": 0.0001,
+  "cnn_initial_lr": 0.001,
+  "cnn_scheduler_factor": 0.5,
+  "cnn_scheduler_patience": 1,
+  "cnn_min_lr": 1e-05,
+  "selected_by_validation": "CNN"
+}
