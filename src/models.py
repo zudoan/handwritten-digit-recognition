@@ -35,7 +35,7 @@ except ImportError:
 
 def create_model(model_type: str, **kwargs) -> Any:
     """
-    Factory function to instantiate models with optimal default hyperparameters.
+    Factory function with the default configurations used in notebook 02.
     """
     m_type = model_type.lower()
 
@@ -43,7 +43,7 @@ def create_model(model_type: str, **kwargs) -> Any:
         return GaussianNB(**kwargs)
 
     elif m_type in ["bernoulli_nb", "bnb"]:
-        return BernoulliNB(binarize=kwargs.get("binarize", 0.1))
+        return BernoulliNB(alpha=kwargs.get("alpha", 1.0), binarize=kwargs.get("binarize", 0.2))
 
     elif m_type in ["knn", "k_nearest_neighbors"]:
         n_neighbors = kwargs.get("n_neighbors", 3)
@@ -65,7 +65,7 @@ def create_model(model_type: str, **kwargs) -> Any:
     elif m_type in ["rbf_svm", "svm_rbf", "svm"]:
         C = kwargs.get("C", 5.0)
         gamma = kwargs.get("gamma", "scale")
-        probability = kwargs.get("probability", True)
+        probability = kwargs.get("probability", False)
         return SVC(
             C=C,
             gamma=gamma,

@@ -99,17 +99,10 @@ class TestFeatureEngineering(unittest.TestCase):
         self.assertLessEqual(float(deskewed.max()), 1.0)
 
     def test_pca_exact_components_ground_truth(self):
-        """Check exact PCA dimensions saved in checkpoints: 112 for deskewed subset, 154 for full 60k."""
         import joblib
-        deskew_pca_path = MODELS_DIR / "pca_transformer_deskew_sub10k.joblib"
-        if deskew_pca_path.exists():
-            p_deskew = joblib.load(deskew_pca_path)
-            self.assertEqual(p_deskew.n_components_, 112)
-
-        pca_path = MODELS_DIR / "pca_transformer.joblib"
-        if pca_path.exists():
-            p_full = joblib.load(pca_path)
-            self.assertEqual(p_full.n_components_, 154)
+        pca = joblib.load(MODELS_DIR / 'pca.joblib')
+        self.assertEqual(pca.n_components_, 113)
+        self.assertEqual(pca.n_samples_, 50000)
 
     def test_pca_transformer_dimensionality(self):
         rng = np.random.RandomState(42)
@@ -170,6 +163,28 @@ class TestBackendAPIAndPreprocessing(unittest.TestCase):
         self.assertEqual(prep.shape, (28, 28))
         self.assertGreater(prep.sum(), 0.0)
 
+    def _check_transparent_digit(self, foreground):
+        alpha = np.zeros((280, 280), dtype=np.uint8)
+        alpha[50:200, 130:150] = 255
+        rgba = np.full((280, 280, 4), foreground, dtype=np.uint8)
+        rgba[..., 3] = alpha
+        background = 255 - foreground
+        opaque = np.where(alpha > 0, foreground, background).astype(np.uint8)
+        outputs = []
+        for pixels in [rgba, opaque]:
+            buffer = io.BytesIO()
+            Image.fromarray(pixels).save(buffer, format='PNG')
+            request = PredictRequest(image_base64=base64.b64encode(buffer.getvalue()).decode(), model_name='cnn', is_upload=True)
+            outputs.append(asyncio.run(predict_digit(request)))
+        self.assertEqual(outputs[0]['predicted_digit'], 1)
+        self.assertEqual(outputs[0]['processed_image'], outputs[1]['processed_image'])
+
+    def test_black_digit_transparent_png(self):
+        self._check_transparent_digit(0)
+
+    def test_white_digit_transparent_png(self):
+        self._check_transparent_digit(255)
+
     def test_api_available_models(self):
         models = get_available_models()
         self.assertIn("models", models)
@@ -218,183 +233,132 @@ class TestBackendAPIAndPreprocessing(unittest.TestCase):
         self.assertIn(res["model_used"], ["SVM", "SVM RBF (Mới - Deskew + PCA 95%)"])
 
 
-def _find_model_file(name: str) -> Path:
-    p = MODELS_DIR / name
-    if not p.exists():
-        p_root_arch = Path(__file__).resolve().parent.parent / "archive_legacy" / "models" / name
-        if p_root_arch.exists():
-            return p_root_arch
-        p_arch = MODELS_DIR / "archive_legacy" / name
-        if p_arch.exists():
-            return p_arch
-    return p
-
-
-class TestAuditRegressionAndModelConsistency(unittest.TestCase):
-    """
-    Regression tests to ensure no audit regressions:
-    1. Unified Deskew + PCA pipeline reload consistency and >= 97.5% accuracy.
-    2. ModernCNN checkpoint exact parameter count (160,074 parameters).
-    3. Hyperparameter search results integrity.
-    4. Exact PCA component verification.
-    """
-
+class TestSavedResultsConsistency(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        import csv, json
         load_all_models()
+        with (MODELS_DIR / 'results.csv').open(encoding='utf-8', newline='') as handle:
+            cls.results = {r['Mô hình']: r for r in csv.DictReader(handle)}
+        cls.config = json.loads((MODELS_DIR / 'selected_config.json').read_text(encoding='utf-8'))
 
-    def test_svm_deskew_pca_pipeline_reload_and_accuracy(self):
-        """Regression test: loading saved unified pipeline gives >= 97.8% on sample batch."""
-        import joblib
-        pipe_path = _find_model_file("svm_rbf_deskew_pca_pipeline.joblib")
-        self.assertTrue(pipe_path.exists(), "svm_rbf_deskew_pca_pipeline.joblib must exist!")
-        pipe = joblib.load(pipe_path)
+    def test_all_five_result_rows_match_predictions(self):
+        from sklearn.metrics import precision_recall_fscore_support
+        with np.load(MODELS_DIR / 'predictions.npz') as saved, np.load(NPZ_DATA_PATH) as data:
+            np.testing.assert_array_equal(saved['y_true'], data['y_test'])
+            for name, row in self.results.items():
+                pred = saved[name]
+                self.assertEqual(len(pred), 10000)
+                errors = int((pred != saved['y_true']).sum())
+                self.assertEqual(errors, int(row['Số ảnh sai']))
+                self.assertAlmostEqual(100 - errors / 100, float(row['Test Acc (%)']))
+                scores = precision_recall_fscore_support(saved['y_true'], pred, average='macro', zero_division=0)[:3]
+                for col, value in zip(['Precision (%)', 'Recall (%)', 'F1 (%)'], scores):
+                    self.assertAlmostEqual(float(row[col]), value * 100)
 
-        with np.load(NPZ_DATA_PATH) as data:
-            x_test_sample = (data["x_test"][:500].astype(np.float32) / 255.0).reshape(500, -1)
-            y_test_sample = data["y_test"][:500]
-
-        preds = pipe.predict(x_test_sample)
-        acc = (preds == y_test_sample).mean()
-        self.assertGreaterEqual(acc, 0.970, f"Expected pipeline sample accuracy >= 97%, got {acc*100:.2f}%")
-
-    def test_modern_cnn_checkpoint_parameters(self):
-        """Verify ModernCNN architecture matches checkpoint (160,074 parameters)."""
+    def test_cnn_checkpoint_matches_saved_predictions(self):
         import torch
         cnn = ModernCNN()
-        pt_path = _find_model_file("modern_cnn_mnist.pt")
-        if not pt_path.exists():
-            pt_path = _find_model_file("CNN.pt")
-        self.assertTrue(pt_path.exists(), "modern_cnn_mnist.pt or CNN.pt must exist!")
-        cnn.load_state_dict(torch.load(pt_path, map_location="cpu"))
-        total_params = sum(p.numel() for p in cnn.parameters())
-        self.assertEqual(total_params, 160074, f"ModernCNN param count {total_params} != 160074")
-
-    def test_hyperparameter_search_results_exist(self):
-        """Verify hyperparameter search results json exists with records and selected=True."""
-        import json
-        json_path = Path(__file__).resolve().parent.parent / "results" / "hyperparameter_search_results.json"
-        self.assertTrue(json_path.exists(), "results/hyperparameter_search_results.json must exist!")
-        with open(json_path, "r", encoding="utf-8") as f:
-            records = json.load(f)
-        self.assertGreaterEqual(len(records), 10)
-        selected = [r for r in records if r.get("selected")]
-        self.assertGreaterEqual(len(selected), 4, "Must have at least 4 selected hyperparameter winners!")
-
-    def test_selected_hyperparameters_match_artifacts(self):
-        """Verify that saved artifacts in saved_models/ strictly match the hyperparameters chosen on validation."""
-        import joblib
-        import json
-        json_path = Path(__file__).resolve().parent.parent / "results" / "hyperparameter_search_results.json"
-        with open(json_path, "r", encoding="utf-8") as f:
-            records = json.load(f)
-        
-        selected_map = {r["model_family"]: r["hyperparameters"] for r in records if r.get("selected")}
-
-        # 1. Linear SVM
-        lsvc_path = _find_model_file("svm_linear_sub10k.joblib")
-        self.assertTrue(lsvc_path.exists())
-        lsvc = joblib.load(lsvc_path)
-        self.assertAlmostEqual(lsvc.get_params()["C"], selected_map["Linear SVM"]["C"],
-                               msg=f"Linear SVM param C {lsvc.get_params()['C']} != {selected_map['Linear SVM']['C']}")
-
-        # 2. Random Forest
-        rf_path = _find_model_file("rf_sub10k.joblib")
-        self.assertTrue(rf_path.exists())
-        rf = joblib.load(rf_path)
-        self.assertEqual(rf.get_params()["n_estimators"], selected_map["Random Forest"]["n_estimators"],
-                         msg=f"Random Forest n_estimators {rf.get_params()['n_estimators']} != {selected_map['Random Forest']['n_estimators']}")
-
-        # 3. k-NN
-        knn_path = _find_model_file("knn_pca_sub10k.joblib")
-        self.assertTrue(knn_path.exists())
-        knn = joblib.load(knn_path)
-        self.assertEqual(knn.get_params()["n_neighbors"], selected_map["k-NN"]["n_neighbors"])
-        self.assertEqual(knn.get_params()["weights"], selected_map["k-NN"]["weights"])
-
-        # 4. RBF SVM
-        svm_rbf_path = _find_model_file("svm_rbf_pca_sub10k.joblib")
-        self.assertTrue(svm_rbf_path.exists())
-        svm_rbf = joblib.load(svm_rbf_path)
-        self.assertAlmostEqual(svm_rbf.get_params()["C"], selected_map["RBF SVM"]["C"])
-
-    def test_cnn_validation_history_and_checkpoint(self):
-        """Verify that CNN validation protocol ran honestly and produced history, checkpoint, and figure."""
-        import json
-        import torch
-        val_json_path = Path(__file__).resolve().parent.parent / "results" / "cnn_validation_history.json"
-        self.assertTrue(val_json_path.exists(), "results/cnn_validation_history.json must exist!")
-        with open(val_json_path, "r", encoding="utf-8") as f:
-            val_data = json.load(f)
-
-        self.assertIn("history", val_data)
-        self.assertIn("train_loss", val_data["history"])
-        self.assertIn("val_loss", val_data["history"])
-        self.assertGreaterEqual(val_data["best_epoch"], 1)
-        self.assertGreaterEqual(val_data["test_accuracy"], 98.5)
-
-        val_ckpt = _find_model_file("modern_cnn_val_tuned.pt")
-        self.assertTrue(val_ckpt.exists(), "modern_cnn_val_tuned.pt must exist!")
-        cnn = ModernCNN()
-        state_dict = torch.load(val_ckpt, map_location="cpu")
-        cnn.load_state_dict(state_dict)
+        cnn.load_state_dict(torch.load(MODELS_DIR / 'CNN.pt', map_location='cpu', weights_only=True))
+        cnn.eval()
         self.assertEqual(sum(p.numel() for p in cnn.parameters()), 160074)
+        with np.load(NPZ_DATA_PATH) as data, np.load(MODELS_DIR / 'predictions.npz') as saved:
+            x = data['x_test'][:256].astype(np.float32) / 255
+            with torch.inference_mode():
+                pred = cnn(torch.from_numpy(x).unsqueeze(1)).argmax(1).numpy()
+            np.testing.assert_array_equal(pred, saved['CNN'][:256])
 
-        fig_path = Path(__file__).resolve().parent.parent / "reports" / "figures" / "08_cnn_training_history.png"
-        self.assertTrue(fig_path.exists(), "reports/figures/08_cnn_training_history.png must exist!")
+    def test_history_matches_checkpoint_and_early_stopping(self):
+        import pandas as pd
+        history = pd.read_csv(MODELS_DIR / 'cnn_history.csv')
+        best = history.loc[history.val_loss.idxmin()]
+        self.assertEqual(int(best.epoch), self.config['cnn_best_epoch'])
+        self.assertAlmostEqual(best.val_loss, self.config['cnn_best_val_loss'])
+        self.assertEqual(int(history.epoch.max()), self.config['cnn_epochs_run'])
+        self.assertAlmostEqual(best.val_acc * 100, float(self.results['CNN']['Val Acc (%)']))
+        stop_loss, wait = float('inf'), 0
+        for loss in history.val_loss:
+            if loss < stop_loss - self.config['cnn_min_delta']:
+                stop_loss, wait = loss, 0
+            else:
+                wait += 1
+        self.assertEqual(wait, self.config['cnn_early_stopping_patience'])
+        self.assertEqual(self.config['cnn_stop_reason'], 'early_stopping')
+        self.assertEqual([self.config[k] for k in ['train', 'validation', 'test']], [50000, 10000, 10000])
 
-    def test_backend_loads_linear_svm_c001(self):
-        """Phase 1: Backend loads Linear SVM C=0.01 from svm_linear_sub10k.joblib."""
-        from app.server import MODEL_CACHE, MODEL_REGISTRY_CONFIG
-        self.assertIn("svm_linear", MODEL_CACHE)
-        lsvc = MODEL_CACHE["svm_linear"]["model"]
-        self.assertAlmostEqual(lsvc.get_params()["C"], 0.01)
-        self.assertEqual(Path(MODEL_REGISTRY_CONFIG["svm_linear"]["checkpoint"]).name, "svm_linear_sub10k.joblib")
-        self.assertIn("C=0.01", MODEL_REGISTRY_CONFIG["svm_linear"]["name"])
+    def test_backend_metadata_matches_saved_results(self):
+        names = {'cnn': 'CNN', 'svm': 'SVM', 'knn': 'k-NN', 'rf': 'Random Forest', 'nb': 'Naive Bayes'}
+        models = get_available_models()['models']
+        self.assertEqual({m['id'] for m in models}, set(names))
+        for model in models:
+            row = self.results[names[model['id']]]
+            self.assertEqual(model['accuracy'], f"{float(row['Test Acc (%)']):.2f}%")
+            self.assertEqual(model['test_errors'], f"{int(row['Số ảnh sai']):,} / 10,000")
+        cnn = next(m for m in models if m['id'] == 'cnn')
+        self.assertIn(f"checkpoint epoch {self.config['cnn_best_epoch']}", cnn['hyperparameters'])
+        self.assertIn(f"Early Stopping Epoch {self.config['cnn_epochs_run']}", cnn['hyperparameters'])
 
-    def test_backend_loads_random_forest_150_trees(self):
-        """Phase 1: Backend loads Random Forest 150 trees from rf_sub10k.joblib."""
-        from app.server import MODEL_CACHE, MODEL_REGISTRY_CONFIG
-        self.assertIn("rf", MODEL_CACHE)
-        rf = MODEL_CACHE["rf"]["model"]
-        self.assertEqual(rf.get_params()["n_estimators"], 150)
-        self.assertIn(Path(MODEL_REGISTRY_CONFIG["rf"]["checkpoint"]).name, ["rf_sub10k.joblib", "Random_Forest.joblib"])
-        self.assertEqual("Random Forest", MODEL_REGISTRY_CONFIG["rf"]["name"])
+    def test_official_model_parameters_and_input_shapes(self):
+        from app.server import MODEL_CACHE
+        nb, knn, svm, rf = [MODEL_CACHE[k]['model'] for k in ['nb', 'knn', 'svm', 'rf']]
+        self.assertEqual((nb.alpha, nb.binarize, nb.n_features_in_), (1.0, 0.2, 784))
+        self.assertEqual((knn.n_neighbors, knn.weights, knn.n_features_in_, len(knn._fit_X)), (3, 'distance', 113, 50000))
+        self.assertEqual((svm.C, svm.kernel, svm.gamma, svm.n_features_in_), (5, 'rbf', 'scale', 113))
+        self.assertEqual((rf.n_estimators, rf.max_features, rf.n_features_in_, rf.random_state), (150, 'sqrt', 784, 42))
 
-    def test_backend_confidence_metadata_and_calibration_honesty(self):
-        """Phase 1: API returns confidence_type and honestly sets is_calibrated=False."""
-        samples = get_sample_test_digits()
-        sample_digit = samples["samples"][0]
-        
-        # Test CNN
-        req_cnn = PredictRequest(image_base64=sample_digit["image_base64"], model_name="cnn")
-        res_cnn = asyncio.run(predict_digit(req_cnn))
-        self.assertIn("Softmax", res_cnn["confidence_type"])
-        self.assertFalse(res_cnn["is_calibrated"])
+    def test_svm_confidence_handles_unavailable_predict_proba(self):
+        from unittest.mock import patch
+        from sklearn.exceptions import NotFittedError
+        from app.server import MODEL_CACHE, prediction_scores, PCA_TRANSFORMER_DESKEW
+        svm = MODEL_CACHE['svm']['model']
+        with np.load(NPZ_DATA_PATH) as data:
+            image = data['x_test'][:1].astype(np.float32) / 255
+        features = PCA_TRANSFORMER_DESKEW.transform(deskew_dataset(image.reshape(1, 784)))
+        predicted = int(svm.predict(features)[0])
+        with patch.object(svm, 'predict_proba', create=True, side_effect=NotFittedError('no probability calibration')):
+            scores = prediction_scores(svm, features, predicted)
+        self.assertEqual(scores.shape, (10,))
+        self.assertTrue(np.isfinite(scores).all())
+        self.assertAlmostEqual(float(scores.sum()), 1.0)
 
-        # Test Linear SVM (decision_function softmax)
-        req_svm = PredictRequest(image_base64=sample_digit["image_base64"], model_name="svm_linear")
-        res_svm = asyncio.run(predict_digit(req_svm))
-        self.assertIn("Decision", res_svm["confidence_type"])
-        self.assertFalse(res_svm["is_calibrated"])
-
-        # Test Random Forest (ensemble_tree_frequency)
-        req_rf = PredictRequest(image_base64=sample_digit["image_base64"], model_name="rf")
-        res_rf = asyncio.run(predict_digit(req_rf))
-        self.assertIn("Tree Voting", res_rf["confidence_type"])
-        self.assertFalse(res_rf["is_calibrated"])
-
-    def test_frontend_no_hardcoded_obsolete_accuracy(self):
-        """Phase 1: index.html contains no obsolete hardcoded accuracies like >99.2%, 98.3%, 97.5%."""
-        html_path = Path(__file__).resolve().parent.parent / "app" / "static" / "index.html"
-        self.assertTrue(html_path.exists())
-        with open(html_path, "r", encoding="utf-8") as f:
-            html = f.read()
-        self.assertNotIn(">99.2%", html)
-        self.assertNotIn("98.3%", html)
-        self.assertNotIn("97.5%", html)
+    def test_all_official_api_predictions_and_confidence(self):
+        sample = get_sample_test_digits()['samples'][0]
+        for model_id in ['cnn', 'svm', 'knn', 'rf', 'nb']:
+            res = asyncio.run(predict_digit(PredictRequest(image_base64=sample['image_base64'], model_name=model_id)))
+            self.assertEqual(res['predicted_digit'], sample['digit'])
+            self.assertEqual(len(res['probabilities']), 10)
+            self.assertFalse(res['is_calibrated'])
 
 
-if __name__ == "__main__":
+class TestUploadedImageSegmentation(unittest.TestCase):
+    def test_plain_digit_ignores_corner_artifact(self):
+        from src.image_preprocessing import extract_uploaded_digit
+        image = np.full((160, 120, 3), 255, dtype=np.uint8)
+        image[0:2, :30] = 0
+        image[40:125, 55:65] = 0
+        result = extract_uploaded_digit(image)
+        self.assertEqual(int(result[:5].sum()), 0)
+        self.assertGreater(int(result[40:125, 55:65].sum()), 0)
+
+    def test_photographed_ink_separates_from_grid_and_page_edge(self):
+        import cv2
+        from src.image_preprocessing import extract_uploaded_digit
+        image = np.full((500, 400, 3), 190, dtype=np.uint8)
+        for x in range(0, 400, 20):
+            cv2.line(image, (x, 0), (x, 499), (155, 165, 180), 1)
+        for y in range(0, 500, 20):
+            cv2.line(image, (0, y), (399, y), (155, 165, 180), 1)
+        cv2.putText(image, '3', (145, 320), cv2.FONT_HERSHEY_SIMPLEX, 5, (45, 55, 105), 5)
+        image[:10] = 20
+        result = extract_uploaded_digit(image)
+        self.assertEqual(int(result[:20].sum()), 0)
+        self.assertGreater(int(result[180:330, 140:260].sum()), 0)
+        self.assertLess(np.count_nonzero(result), 15000)
+
+    def test_empty_white_upload_stays_empty(self):
+        from src.image_preprocessing import extract_uploaded_digit
+        self.assertFalse(extract_uploaded_digit(np.full((300, 300, 3), 255, dtype=np.uint8)).any())
+
+
+if __name__ == '__main__':
     unittest.main()
-

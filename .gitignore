@@ -24,6 +24,7 @@ data/raw/
 
 # Notebook training output cache (official models are served from saved_models/)
 mnist_best_models/
+mnist_eda_output/
 
 # VS Code / IDE
 .vscode/
@@ -34,3 +35,6 @@ mnist_best_models/
 # OS generated files
 .DS_Store
 Thumbs.db
+~$*
+*.tmp
+

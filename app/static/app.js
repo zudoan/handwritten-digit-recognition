@@ -4,6 +4,39 @@
  * Art Direction: Premium Soft Glass + Editorial Minimalism + Interactive Creative Workspace
  */
 
+// Normalize the original upload before adding black canvas padding.
+function normalizeUploadedPixels(imageData) {
+    const { data, width, height } = imageData;
+    let visibleMass = 0, visibleBrightness = 0;
+    for (let i = 0; i < data.length; i += 4) {
+        const alpha = data[i + 3] / 255;
+        const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        visibleMass += alpha;
+        visibleBrightness += gray * alpha;
+    }
+    const background = visibleMass > 0 && visibleBrightness / visibleMass < 127 ? 255 : 0;
+    let borderSum = 0, borderCount = 0;
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const i = (y * width + x) * 4;
+            const alpha = data[i + 3] / 255;
+            const gray = Math.round((0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]) * alpha + background * (1 - alpha));
+            data[i] = data[i + 1] = data[i + 2] = gray;
+            data[i + 3] = 255;
+            if (x === 0 || y === 0 || x === width - 1 || y === height - 1) {
+                borderSum += gray;
+                borderCount++;
+            }
+        }
+    }
+    if (borderSum / borderCount > 127) {
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] = data[i + 1] = data[i + 2] = 255 - data[i];
+        }
+    }
+    return imageData;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // Canvas & Workspace Elements
     const canvas = document.getElementById("digitCanvas");
@@ -37,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // State
     let isDrawing = false;
     let hasDrawn = false;
+    let uploadedImageData = null;
     let lastX = 0;
     let lastY = 0;
     let strokeTimer = null;
@@ -44,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 1. Initialize Canvas Background
     function initCanvas() {
+        uploadedImageData = null;
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.lineCap = "round";
@@ -124,6 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 5. Drawing Event Handlers
     function startDrawing(e) {
+        uploadedImageData = null;
         e.preventDefault();
         isDrawing = true;
         const pos = getCanvasCoordinates(e);
@@ -255,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 10. Predict via Backend API
     async function predictCurrentDigit() {
-        const dataUrl = canvas.toDataURL("image/png");
+        const dataUrl = uploadedImageData || canvas.toDataURL("image/png");
         const modelName = modelSelect.value;
 
         // Subtle loading indicator on predict button
@@ -269,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({
                     image_base64: dataUrl,
                     model_name: modelName,
+                    is_upload: uploadedImageData !== null,
                 }),
             });
 
@@ -398,6 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadSampleIntoCanvas(b64) {
+        uploadedImageData = null;
         const img = new Image();
         img.onload = () => {
             ctx.fillStyle = "#000000";
@@ -422,6 +460,14 @@ document.addEventListener("DOMContentLoaded", () => {
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
+                    const normalized = document.createElement("canvas");
+                    normalized.width = img.width;
+                    normalized.height = img.height;
+                    const normalizedCtx = normalized.getContext("2d", { willReadFrequently: true });
+                    normalizedCtx.drawImage(img, 0, 0);
+                    normalizedCtx.putImageData(normalizeUploadedPixels(
+                        normalizedCtx.getImageData(0, 0, img.width, img.height)
+                    ), 0, 0);
                     ctx.fillStyle = "#000000";
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     
@@ -432,8 +478,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     const centerShiftX = (canvas.width - img.width * ratio) / 2;
                     const centerShiftY = (canvas.height - img.height * ratio) / 2;
                     
-                    ctx.drawImage(img, 0, 0, img.width, img.height,
+                    ctx.drawImage(normalized, 0, 0, img.width, img.height,
                                       centerShiftX, centerShiftY, img.width * ratio, img.height * ratio);
+                    uploadedImageData = event.target.result;
                     hasDrawn = true;
                     if (canvasHint) canvasHint.style.opacity = "0";
                     predictCurrentDigit();

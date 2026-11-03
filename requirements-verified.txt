@@ -1,5 +1,6 @@
 --extra-index-url https://download.pytorch.org/whl/cpu
 numpy==2.5.4
+pandas==2.2.3
 scipy==1.18.1
 matplotlib==3.10.8
 seaborn==0.13.2
@@ -11,6 +12,6 @@ Pillow==13.0.0
 torch==2.15.0+cpu
 fastapi==0.162.0
 uvicorn==0.54.0
-python-docx==1.2.0
-python-pptx==1.0.2
 pydantic==2.14.2
+IPython==9.18.1
+threadpoolctl==3.6.0
