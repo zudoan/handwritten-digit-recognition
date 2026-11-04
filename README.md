@@ -1,7 +1,7 @@
 # Nhận Dạng Chữ Số Viết Tay Trên Bộ Dữ Liệu MNIST
 
-Bài tập lớn học phần Nhận dạng mẫu — Học kỳ II, Năm học 2025–2026  
-Trường Đại học Thủy Lợi  
+Bài tập lớn học phần Nhận dạng mẫu 
+Phân hiệu trường Đại học Thủy Lợi  
 
 Nhóm thực hiện: Nhóm 03 (Lớp S26-65TTNT)  
 - Đoàn Anh Vũ — MSV: 2351267280  
