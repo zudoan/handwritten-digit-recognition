@@ -104,7 +104,7 @@ Phân tích các mẫu lỗi cho thấy phần lớn các ca dự đoán sai b�
 │   ├── figures/                # Biểu đồ đánh giá thực nghiệm
 │   ├── Bang_Phan_Cong_Cong_Viec_Nhom_03.docx
 │   ├── Nhom3_AnhVu_HongNguyen.pdf        # Báo cáo kỹ thuật chi tiết (28 trang)
-│   └── Thuyet_Trinh_MNIST_Nhom_03_11_Slide.pptx
+│   └── Nhom03_DoanAnhVu_NguyenHongNguyen.pptx # Slide thuyết trình báo cáo đề tài
 ├── saved_models/               # Trọng số mô hình đã huấn luyện (.pt, .joblib, .json)
 ├── src/                        # Mã nguồn logic xử lý dùng chung
 │   ├── config.py               # Đường dẫn và hằng số toàn cục
